@@ -1,6 +1,6 @@
 <?php
 
-namespace hitcel\general;
+namespace xfxstudios\general;
 
 class GeneralClass
 {
