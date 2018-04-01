@@ -11,21 +11,20 @@ class GeneralClass
      */
     public function __construct()
     {
-        // constructor body
-    }
-
-    /**
-     * Friendly welcome
-     *
-     * @param string $phrase Phrase to return
-     *
-     * @return string Returns the phrase passed in
-     */
-    public function muestra($phrase)
-    {
-        return $phrase;
-    }
-
+		// Instancia de Codeigniter para cargar la libreria mgeneral
+		$this->ci =& get_instance();
+		$this->ci->load->model('mgeneral');
+	}
+	
+	//Funcion para escribir en historial de aplicaciones
+	//Recibe 2 parametros, todo lo demás se configura en el mgeneral de cada app
+	public function historial($X){
+		$data = array(
+			"asunto"	=>	$X[0],
+			"info"		=>	$X[1]
+		);
+		$this->ci->mgeneral->setHistorial($data);
+	}
 
     //detecta el idioma del usuario
 	public function idioma(){
