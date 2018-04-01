@@ -1,12 +1,12 @@
 {
-    "name": "hitcel/general",
+    "name": "xfxstudios/general",
     "type": "library",
     "description": "Libreria de Funciones Generales",
     "keywords": [
         ":vendor",
         ":package_name"
     ],
-    "homepage": "https://github.com/:vendor/:package_name",
+    "homepage": "https://github.com/xfxstudios/general",
     "license": "MIT",
     "authors": [
         {
@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "hitcel\\general\\": "src"
+            "xfxstudios\\general\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "hitcel\\general\\": "tests"
+            "xfxstudios\\general\\": "tests"
         }
     },
     "scripts": {
