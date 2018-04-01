@@ -2,6 +2,8 @@
 
 namespace xfxstudios\general;
 
+use GeoIp2\Database\Reader;
+
 class GeneralClass
 {
     /**
@@ -39,15 +41,6 @@ class GeneralClass
 
 		return ($idi=='es') ? 'es' : 'en';
 	}//
-
-	//Retorna la traduccion para php de i18n
-	/*public function traduccion(){
-		$lang = $this->idioma();
-		$file = file_get_contents(base_url().'assets/locales/'.$lang.'.php.json');
-		//$file = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/gmanagerb/assets/locales/'.$lang.'.php.json');
-
-		return json_decode($file);
-	}*/
 
 
 	//Genera una clave de usuario
