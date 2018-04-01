@@ -129,7 +129,10 @@ class GeneralClass
 	
 
 	//Retorna la fecha en formato corto
+	//Agregadas nuevas formas de fecha
 	public function date($time=null){
+		setlocale(LC_TIME,$this->idioma());
+		
 		if($time == null){
 			$timezone = $this->city($this->IPreal())->timezone;
 		}else{
@@ -137,24 +140,18 @@ class GeneralClass
 		}
 		date_default_timezone_set($timezone);
 		$ret = (object) array(
-			'datetime'=>date("Y-m-d H:i:s"),
-			'date'=>date("Y-m-d"),
-			'time'=>date("H:i:s"),
+			'datetime'  => date("Y-m-d H:i:s"),
+			'date'      => date("Y-m-d"),
+			'time'      => date("H:i:s"),
+			'microtime' => date("H:i a"),
+			'large'     => strftime("%A, %e %B %Y - %H:%M hrs"),
+			'extra'     => strftime('%A %e de %B del %Y'),
+			'iso'		=> date("c"),
+			'seconds'	=> date("U"),
+			'format'	=> date("r")
 		);
 		return $ret;
 	}//END
-
-	//Retorna la fecha en formato largo
-	public function fechaLarga($time=null){
-		setlocale(LC_TIME,$this->idioma());
-		if($time == null){
-			$timezone = $this->city($this->IPreal())->timezone;
-		}else{
-			$timezone = $time;
-		}
-		date_default_timezone_set($timezone);
-		return strftime("%A, %B %e, %Y - %H:%M hrs.");
-	}
 
 
 	//Corta el texto agregando 3 puntos al final
@@ -454,52 +451,66 @@ class GeneralClass
 	}
 
 
-	//Retorna lista de fechas laborales en un periodo dado
 	/**
-	 * Recibe ubn objeto con la data a procesar
-	 * $this->my_general->laborales((object)array('inicia'=>'Y-m-d', 'finaliza'=>'Y-m-d', 'intervalo'=>'1','feriados'=>array() ));
-	 * Retorna un objeto con dos nodos (Lista: con la lista de fechas y Cantidad: con el todal de días laborales)
-	 */
-	public function laborales($X){
-		if(count($X->feriados)==0){
-			$feriados = array(
-				/*'01-01',  //  Año Nuevo (irrenunciable)*/
-			);
-		}else{
-			$feriados = $X->feriados;
-		}
-		  
-		  $inicia = new DateTime( $X->inicia );    //inicia
-		  $finaliza = new DateTime( $X->finaliza );    //termina
-		  
-		  $intervalo = new DateInterval('P'.$X->intervalo.'D');    // intervalo de un día
-		  $rango = new DatePeriod($inicia, $intervalo ,$finaliza); //creamos rango de fechas
-		  
-		  $dias_lab = array();
-		  foreach($rango as $fecha){
-			//Se considera el fin de semana y los feriados como no hábiles
-			if($fecha->format("N") <6 AND !in_array($fecha->format("d-m"),$feriados))
-				$dias_lab[] = $fecha->format("Y-m-d"); // se asignan fechas validas
-		  }
+	 * Retorna un array de fechas de acuerdo al rango solicitado, excluyendo fines de semana
+	*/
+	public function diasFin($X){
+		$timezone = $this->city($this->IPreal())->timezone;
+		date_default_timezone_set($timezone);
 
-		  $retorno = (object) array();
-		  $retorno->lista = $dias_lab;
-		  $retorno->cantidad = count($dias_lab);
-		  
-		  return $retorno;
-	}
-
-	public function diasFin(){
-		$fecha1 = strtotime('2018-01-01'); 
-		$fecha2 = strtotime('2018-01-30'); 
+		$fecha1 = strtotime($X[0]); 
+		$fecha2 = strtotime($X[1]); 
+		$ret = array();
 		for($fecha1;$fecha1<=$fecha2;$fecha1=strtotime('+1 day ' . date('Y-m-d',$fecha1))){ 
 
 			if((strcmp(date('w',$fecha1),'0'))!==0 && (strcmp(date('w',$fecha1),'6'))!==0){
-				echo date('Y-m-d l',$fecha1) . '<br />'; 
+				array_push($ret, date('Y-m-d l',$fecha1)); 
 			}
 
 		}
-	}
+		return $ret;
+	}//
+
+
+	/**
+	 * Retorna un array con los dias habiles en un rango dado
+	 * recibe un arra con la data a procesar
+	 * array('fecha1','fecha2',array feriados)
+	 */
+	function diashabiles($X){
+		$timezone = $this->city($this->IPreal())->timezone;
+		date_default_timezone_set($timezone);
+
+		$inicio = new DateTime($X[0]);//Inicio
+		$final = new DateTime($X[1]);//Fin
+
+		// Meter fecha final en la operación.
+		$final->modify('+1 day');
+		
+		$intervalo = $final->diff($inicio);
+		
+		//Días totales
+		$dias = $intervalo->days;
+		
+		// Creamos un perido para que imprima los días (P1D es igual a 1 dia)
+		$periodo = new DatePeriod($inicio, new DateInterval('P1D'), $final);
+		
+		//Array con días de fiesta
+		$holidays = $X[2];//Array con días de fiesta
+	
+		foreach($periodo as $d) {
+			$pos = $d->format('D');
+		
+			if ($pos == 'Sat' || $pos == 'Sun') {
+				$dias--;
+			}
+		
+			elseif (in_array($d->format('Y-m-d'), $holidays)) {
+				$dias--;
+			}
+		}
+		return $dias;
+	}//
 
 
 
