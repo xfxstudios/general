@@ -13,7 +13,7 @@ class GeneralClass
     {
 		// Instancia de Codeigniter para cargar la libreria mgeneral
 		$this->ci =& get_instance();
-		//$this->ci->load->model('mgeneral');
+		$this->ci->load->model('mgeneral');
 		$this->genmodel = new GeneralModel();
 	}
 	
@@ -21,10 +21,10 @@ class GeneralClass
 	//Recibe 2 parametros, todo lo demás se configura en el mgeneral de cada app
 	public function historial($X){
 		$data = array(
-			"asunto"	=>	$X[0],
-			"info"		=>	$X[1]
+			"asunto"     => $X[0],
+			"info"       => $X[1]
 		);
-		return $this->genmodel->setHistorial($data);
+		$this->ci->mgeneral->setHistorial($data);
 	}
 
     //detecta el idioma del usuario
