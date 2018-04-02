@@ -517,7 +517,7 @@ class GeneralClass
 	//Lista de monedas mas comunes
 	public function getMonedas($moneda = null){
         
-        $data = (object) array(
+        $data = array(
             "euro"                    => (object) array("iso"=>"EUR","isocode"=>"978","simboloDerecha"=>"","simboloIzquierda"=>"E","decimales"=>"2","separadordecimal"=>",","separadormiles"=>".","plural"=>"euros"),
             "peso argentino"          => (object) array("iso"=>"ARS","isocode"=>"032","simboloDerecha"=>"","simboloIzquierda"=>"","decimales"=>"","separadordecimal"=>"","separadormiles"=>"","plural"=>"pesos"),
             "dólar australiano"       => (object) array("iso"=>"AUD","isocode"=>"036","simboloDerecha"=>"","simboloIzquierda"=>"","decimales"=>"","separadordecimal"=>"","separadormiles"=>"","plural"=>"dolares"),
