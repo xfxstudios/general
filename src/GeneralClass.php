@@ -1,8 +1,8 @@
 <?php
-
 namespace xfxstudios\general;
 
 use GeoIp2\Database\Reader;
+use xfxstudios\general\GeneralModel;
 
 class GeneralClass
 {
@@ -13,7 +13,8 @@ class GeneralClass
     {
 		// Instancia de Codeigniter para cargar la libreria mgeneral
 		$this->ci =& get_instance();
-		$this->ci->load->model('mgeneral');
+		//$this->ci->load->model('mgeneral');
+		$this->genmodel = new GeneralModel();
 	}
 	
 	//Funcion para escribir en historial de aplicaciones
@@ -23,7 +24,7 @@ class GeneralClass
 			"asunto"	=>	$X[0],
 			"info"		=>	$X[1]
 		);
-		$this->ci->mgeneral->setHistorial($data);
+		return $this->genmodel->setHistorial($data);
 	}
 
     //detecta el idioma del usuario
