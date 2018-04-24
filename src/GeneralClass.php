@@ -53,15 +53,38 @@ class GeneralClass
 		$r = trim(str_replace($rempl, ' ', $valor));
 		return str_replace("\r", "", str_replace("\n", "", str_replace("\t", "", $r)));
 	}
+	public function _getUrl($url) {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HEADER, FALSE);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+        if (curl_exec($curl) === false) {
+            return false;
+        } else {
+            $return = curl_exec($curl);
+        }
+        curl_close($curl);
+
+        return $return;
+    }
 	public function getCNE($X){
 		//Obtenemos el HTML del CNE
-			$html = file_get_contents('http://www.cne.gov.ve/web/registro_electoral/ce.php?nacionalidad='.$X[0].'V&cedula='.$X[1]);
+			try{
+				$html = $this->_getUrl('http://www.cne.gov.ve/web/registro_electoral/ce.php?nacionalidad='.$X[0].'&cedula='.$X[1]);
+				if(!$html){
+					throw new Exception("Error ".error_get_last());	
+				}
+			}catch(Exception $e){
+				return $e;
+			}
 		//Eliminamos las etiquetas HTML
 			$html = strip_tags($html);
 		//Datos a buscar en el texto generado
 			$rempl = array('Cédula:', 'Nombre:', 'Estado:', 'Municipio:', 'Parroquia:', 'Centro:', 'Dirección:', 'SERVICIO ELECTORAL', 'Mesa:');
 		//Reemplazamos dichos datos por caracter de control
-			$r = trim(str_replace($rempl, '|', limpiarCampo($html)));
+			$r = trim(str_replace($rempl, '|', $this->limpiarCampo($html)));
 		//Gebneramos el array desde el caracter de control
 			$recurso = explode("|", $r);
 		//Verificamos que el resultado sea válido
@@ -73,8 +96,8 @@ class GeneralClass
 				);
 			}else{
 				//Si es válido preparamos el objeto de salida
-			$n = explode("-",$resource[1]);//separamos la cédula
-			$nn = explode(" ",$resource[2]);//Separamos el nombre
+			$n = explode("-",$recurso[1]);//separamos la cédula
+			$nn = explode(" ",$recurso[2]);//Separamos el nombre
 			//$titulos = array('Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido');
 		
 				$datos = (object) array(
