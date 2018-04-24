@@ -42,6 +42,60 @@ class GeneralClass
 		return ($idi=='es') ? 'es' : 'en';
 	}//
 
+	//Crear variable a partir de cadena de texto simple
+	public function _variable($X){
+		echo eval('return $'. $X);
+	}
+
+	//Retorna los Datos de un usuario desde el CNE con su Cédula de Identidad
+	public function limpiarCampo($valor) {
+		$rempl = array('\n', '\t');
+		$r = trim(str_replace($rempl, ' ', $valor));
+		return str_replace("\r", "", str_replace("\n", "", str_replace("\t", "", $r)));
+	}
+	public function getCNE($X){
+		//Obtenemos el HTML del CNE
+			$html = file_get_contents('http://www.cne.gov.ve/web/registro_electoral/ce.php?nacionalidad='.$X[0].'V&cedula='.$X[1]);
+		//Eliminamos las etiquetas HTML
+			$html = strip_tags($html);
+		//Datos a buscar en el texto generado
+			$rempl = array('Cédula:', 'Nombre:', 'Estado:', 'Municipio:', 'Parroquia:', 'Centro:', 'Dirección:', 'SERVICIO ELECTORAL', 'Mesa:');
+		//Reemplazamos dichos datos por caracter de control
+			$r = trim(str_replace($rempl, '|', limpiarCampo($html)));
+		//Gebneramos el array desde el caracter de control
+			$recurso = explode("|", $r);
+		//Verificamos que el resultado sea válido
+			if(strlen($recurso[1])>20){
+				//Si no es v´´alido la cédula no existe
+				$datos = (object) array(
+					"cod"	=>	"200",
+					"msg"	=>	"La cédula no se encuentra Registrada o Se envión un dato errado, por favor, verifique"
+				);
+			}else{
+				//Si es válido preparamos el objeto de salida
+			$n = explode("-",$resource[1]);//separamos la cédula
+			$nn = explode(" ",$resource[2]);//Separamos el nombre
+			//$titulos = array('Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido');
+		
+				$datos = (object) array(
+					"cod"            => "200",
+					"nacionalidad"   => $n[0],
+					"cédula"         => $n[1],
+					"cedCompleta"    => $recurso[1],
+					"nombreCompleto" => $recurso[2],
+					"estado"         => $recurso[3],
+					"municipio"      => $recurso[4],
+					"parroquia"      => $recurso[5],
+					"escuela"        => $recurso[6],
+				);
+				//Verificamos la cantidad de nombres y apellidos y los recorremos
+				/*for($i=0; $i<count($nn);$i++){
+					$datos[$titulos[$i]] = $nn[$i];
+				}*/
+			}
+		//Retornamos la respuesta
+			return $datos;
+	}//
 
 	//Genera una clave de usuario
 	function claveusuario($X){
