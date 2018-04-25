@@ -54,8 +54,14 @@ class GeneralClass
 		return str_replace("\r", "", str_replace("\n", "", str_replace("\t", "", $r)));
 	}//
 	public function _verificador($X) {
+		$n = explode("|",$X);
+		if(strlen($n[1])==7){
+			$c = "0".$n[1];//Cédulas de 7 Digitos
+		}else if(strlen($n[1])==6){
+			$c = "00".$n[1];//Cédulas de 6 digitos
+		}
 	
-			$digitos = str_split($X);
+			$digitos = str_split($n[0].$c);
 			$digitos[8] *= 2;
 			$digitos[7] *= 3;
 			$digitos[6] *= 4;
@@ -141,7 +147,7 @@ class GeneralClass
 					"cod"            => "200",
 					"nacionalidad"   => $n[0],
 					"cédula"         => $n[1],
-					"RIF"            => $n[0].$n[1].$this->_verificador($n[0].$n[1]),
+					"RIF"            => $n[0].-'-'.$n[1].'-'.$this->_verificador($n[0].'|'.$n[1]),
 					"cedCompleta"    => $recurso[1],
 					"nombreCompleto" => $recurso[2],
 					"estado"         => $recurso[3],
