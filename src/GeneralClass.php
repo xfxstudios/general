@@ -52,7 +52,44 @@ class GeneralClass
 		$rempl = array('\n', '\t');
 		$r = trim(str_replace($rempl, ' ', $valor));
 		return str_replace("\r", "", str_replace("\n", "", str_replace("\t", "", $r)));
-	}
+	}//
+	public function _verificador($X) {
+	
+			$digitos = str_split($X);
+			$digitos[8] *= 2;
+			$digitos[7] *= 3;
+			$digitos[6] *= 4;
+			$digitos[5] *= 5;
+			$digitos[4] *= 6;
+			$digitos[3] *= 7;
+			$digitos[2] *= 2;
+			$digitos[1] *= 3;
+	
+			switch ($digitos[0]) {
+				case 'V':
+					$digitoEspecial = 1;
+					break;
+				case 'E':
+					$digitoEspecial = 2;
+					break;
+				case 'C':
+				case 'J':
+					$digitoEspecial = 3;
+					break;
+				case 'P':
+					$digitoEspecial = 4;
+					break;
+				case 'G':
+					$digitoEspecial = 5;
+					break;
+			}
+			$suma = (array_sum($digitos)) + ($digitoEspecial*4);
+			$residuo = $suma % 11;
+			$resta = 11 - $residuo;
+			$digitoVerificador = ($resta >= 10) ? 0 : $resta;
+			
+		return $digitoVerificador;
+	}//
 	public function _getUrl($url) {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -104,6 +141,7 @@ class GeneralClass
 					"cod"            => "200",
 					"nacionalidad"   => $n[0],
 					"cédula"         => $n[1],
+					"RIF"            => $n[0].$n[1].$this->_verificador($n[0].$n[1]),
 					"cedCompleta"    => $recurso[1],
 					"nombreCompleto" => $recurso[2],
 					"estado"         => $recurso[3],
