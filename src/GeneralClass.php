@@ -150,6 +150,19 @@ class GeneralClass
 				//Si es válido preparamos el objeto de salida
 			$n = explode("-",$recurso[1]);//separamos la cédula
 			$nn = explode(" ",$recurso[2]);//Separamos el nombre
+			$est = explode(" ",$recurso[3]);
+			unset($est[0]);
+			$estFinal = (count($est)>1) ? implode(" ",$est) : implode("",$est);
+			
+			$cid = explode(" ",$recurso[4]);
+			unset($cid[0]);
+			$cidFinal = (count($cid)>1) ? implode(" ",$cid) : implode("",$cid);
+			
+			$parr = explode(" ",$recurso[5]);
+			unset($parr[0]);
+			$parrFinal = (count($parr)>1) ? implode(" ",$parr) : implode("",$parr);
+
+
 			//$titulos = array('Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido');
 		
 				$datos = (object) array(
@@ -159,9 +172,9 @@ class GeneralClass
 					"RIF"            => (strlen($n[1]) == 7 ) ? $n[0].'-0'.$n[1].'-'.$this->_verificador($n[0].'|'.$n[1]) : $n[0].'-'.$n[1].'-'.$this->_verificador($n[0].'|'.$n[1]),
 					"cedCompleta"    => $recurso[1],
 					"nombreCompleto" => $recurso[2],
-					"estado"         => $recurso[3],
-					"municipio"      => $recurso[4],
-					"parroquia"      => $recurso[5],
+					"estado"         => $estFinal,
+					"municipio"      => $cidFinal,
+					"parroquia"      => $parrFinal,
 					"escuela"        => $recurso[6],
 				);
 				//Verificamos la cantidad de nombres y apellidos y los recorremos
