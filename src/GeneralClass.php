@@ -118,7 +118,13 @@ class GeneralClass
 	public function getCNE($X){
 		//Obtenemos el HTML del CNE
 			try{
-				$html = $this->_getUrl('http://www.cne.gov.ve/web/registro_electoral/ce.php?nacionalidad='.$X[0].'&cedula='.$X[1]);
+				$context = stream_context_create(array(
+					'http' => array(
+						'timeout' => 10   // Timeout in seconds
+					)
+				));
+				//$html = $this->_getUrl('http://www.cne.gov.ve/web/registro_electoral/ce.php?nacionalidad='.$X[0].'&cedula='.$X[1]);
+				$html = file_get_contents('http://www.cne.gov.ve/web/registro_electoral/ce.php?nacionalidad='.$X[0].'&cedula='.$X[1] , 0 , $context);
 				if(!$html){
 					throw new Exception("Error ".error_get_last());	
 				}
@@ -137,7 +143,7 @@ class GeneralClass
 			if(strlen($recurso[1])>20){
 				//Si no es v´´alido la cédula no existe
 				$datos = (object) array(
-					"cod"	=>	"200",
+					"cod"	=>	"201",
 					"msg"	=>	"La cédula no se encuentra Registrada o Se envión un dato errado, por favor, verifique"
 				);
 			}else{
@@ -149,7 +155,7 @@ class GeneralClass
 				$datos = (object) array(
 					"cod"            => "200",
 					"nacionalidad"   => $n[0],
-					"cédula"         => $n[1],
+					"cedula"         => $n[1],
 					"RIF"            => (strlen($n[1]) == 7 ) ? $n[0].'-0'.$n[1].'-'.$this->_verificador($n[0].'|'.$n[1]) : $n[0].'-'.$n[1].'-'.$this->_verificador($n[0].'|'.$n[1]),
 					"cedCompleta"    => $recurso[1],
 					"nombreCompleto" => $recurso[2],
