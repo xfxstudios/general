@@ -4,7 +4,7 @@ namespace xfxstudios\general;
 class Firemanager
 {
     public $url;
-    public $error;
+    private $error;
 
     public function __construct(){
 
