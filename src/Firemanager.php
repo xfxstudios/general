@@ -3,15 +3,15 @@ namespace xfxstudios\general;
 
 class Firemanager
 {
-    public $url;
+    public $ur;
     private $error;
 
-    public function __construct(){
-
+    public function __construct($ur){
+        $this->url = $ur;
     }
 
     public function _error(){
-        return self::error;
+        return $this->error;
     }
 
     //Crea un nuevo Usuario
@@ -19,10 +19,18 @@ class Firemanager
     $send = array('a@a.com','+584144402465','14186541','Carlos Molleja');
     var_dump($this->my_fireuser->addUser($send));*/
     public function addUser($X=null){
-        if(count($X)<4 || $X===null){
+        if(count($X) < 4 || $X===null){
             $this->error = "Faltan elementos para crear el usuario";
             return false;
-        };
+            exit;
+        }
+        foreach($X as $item){
+            if($item=="" || $item===null){
+                $this->error = "Faltan elementos para crear el usuario";
+                return false;
+                exit;
+            }
+        }
 
         $service_url = $this->url."addUser/".$X[0]."/".$X[1]."/".$X[2]."/".str_replace(" ","%20",$X[3]);
 
@@ -90,6 +98,13 @@ class Firemanager
                 $this->error = "Faltan elemento para procesar su solicitud, por favor, Verifique";
                 return false;
             }
+            foreach($X as $item){
+                if($item=="" || $item===null){
+                    $this->error = "Faltan elementos para crear el usuario";
+                    return false;
+                    exit;
+                }
+            }
             $service_url = $this->url."updateUserUid/".$X[0]."/".$X[1]."/".str_replace(" ","%20",$X[2]);
 
             $curl = curl_init();
@@ -108,7 +123,7 @@ class Firemanager
             curl_close($curl);
             $data = explode("vegur",$resp);
             return json_decode($data[1]);
-            return $resp;
+           // return $resp;
     }//
 
 
@@ -125,6 +140,13 @@ class Firemanager
             if(count($X) < 2 || $X===null){
                 $this->error = "Faltan elemento para procesar su solicitud, por favor, Verifique";
                 return false;
+            }
+            foreach($X as $item){
+                if($item=="" || $item===null){
+                    $this->error = "Faltan elementos para crear el usuario";
+                    return false;
+                    exit;
+                }
             }
             $service_url = $this->url."updateUserEmail/".$X[0]."/".$X[1];
 
@@ -144,7 +166,7 @@ class Firemanager
             curl_close($curl);
             $data = explode("vegur",$resp);
             return json_decode($data[1]);
-            return $resp;
+            //return $resp;
     }//
 
 
@@ -177,7 +199,7 @@ class Firemanager
             curl_close($curl);
             $data = explode("vegur",$resp);
             return json_decode($data[1]);
-            return $resp;
+            //return $resp;
     }//
 
 
@@ -191,11 +213,18 @@ class Firemanager
     /*$datos = array('uep6JxJM0OYBZ9Xh2J8HcFcfMLl1','16401770');
     var_dump($this->my_fireuser->updatePass($datos));*/
     public function updatePass($X=null){
-            if(count($X<2) || $X===null){
+            if(count($X)<2 || $X===null){
                 $this->error = "Faltan elementos para procesar su solicitud, por favor, Verifique";
                 return false;
             };
-            $service_url = $this->url."updateUserPass/".$X[0]."/".urlencode($X[1]);
+            foreach($X as $item){
+                if($item=="" || $item===null){
+                    $this->error = "Faltan elementos para crear el usuario";
+                    return false;
+                    exit;
+                }
+            }
+            $service_url = $this->url."updateUserPassword/".$X[0]."/".urlencode($X[1]);
 
             $curl = curl_init();
             curl_setopt_array($curl, array(
@@ -213,7 +242,7 @@ class Firemanager
             curl_close($curl);
             $data = explode("vegur",$resp);
             return json_decode($data[1]);
-            return $resp;
+            //return $resp;
     }//
 
 
@@ -247,7 +276,7 @@ class Firemanager
             curl_close($curl);
             $data = explode("vegur",$resp);
             return json_decode($data[1]);
-            return $resp;
+            //return $resp;
     }//
 
 
@@ -280,7 +309,7 @@ class Firemanager
             curl_close($curl);
             $data = explode("vegur",$resp);
             return json_decode($data[1]);
-            return $resp;
+            //return $resp;
     }//
 
 
@@ -314,7 +343,7 @@ class Firemanager
             curl_close($curl);
             $data = explode("vegur",$resp);
             return json_decode($data[1]);
-            return $resp;
+            //return $resp;
     }//
 
 }
