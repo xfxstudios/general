@@ -10,8 +10,36 @@ class Firemanager
         $this->url = $ur;
     }
 
-    public function _error(){
-        return $this->error;
+    public function _error($x=null){
+        if($x===null){
+            return $this->error;
+        }else{
+            switch ($x) {
+                case 'auth/invalid-phone-number':
+                    return "Formáto de movil Inválido, Formato correcto: +58xxxxxxx";
+                break;
+                
+                case 'auth/phone-number-already-exists':
+                    return "El número de Móvil ya existe, por favor, verifique";
+                break;
+                
+                case 'auth/invalid-email':
+                    return "Formato de Email Inválido, por favor, verifique";
+                break;
+                
+                case 'auth/email-already-exists':
+                    return "El Email ya existem por favor, verifique";
+                break;
+                
+                case 'auth/user-not-found':
+                    return "Usuario no registrado en el Sistema, por favor, Verifique";
+                break;
+                
+                default:
+                    return "Error inesperado de Firebase";
+                break;
+            }
+        }
     }
 
     //Crea un nuevo Usuario
