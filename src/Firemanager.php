@@ -67,7 +67,7 @@ class Firemanager
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_URL            => $service_url,
             CURLOPT_POST           => true,
-            CURLOPT_HEADER         => true,
+            //CURLOPT_HEADER         => true,
             CURLOPT_CONNECTTIMEOUT => 120,
             CURLOPT_TIMEOUT        => 120
         ));
@@ -76,8 +76,7 @@ class Firemanager
             return 'Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl);
         }
         curl_close($curl);
-        $data = explode("vegur",$resp);
-        return json_decode($data[1]);
+        return json_decode($resp);
     }//
 
 
@@ -99,7 +98,7 @@ class Firemanager
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_URL            => $service_url,
                 CURLOPT_CUSTOMREQUEST   =>  'GET',
-                CURLOPT_HEADER         => true,
+                //CURLOPT_HEADER         => true,
                 CURLOPT_CONNECTTIMEOUT => 120,
                 CURLOPT_TIMEOUT        => 120
             ));
@@ -108,8 +107,9 @@ class Firemanager
                 return 'Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl);
             }
             curl_close($curl);
-            $data = explode("vegur",$resp);
-            return json_decode($data[1]);
+            /*$data = explode("vegur",$resp);
+            return json_decode($data[1]);*/
+            return $resp;
     }//
 
     /**
@@ -140,7 +140,7 @@ class Firemanager
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_URL            => $service_url,
                 CURLOPT_CUSTOMREQUEST   =>  'PUT',
-                CURLOPT_HEADER         => true,
+                //CURLOPT_HEADER         => true,
                 CURLOPT_CONNECTTIMEOUT => 120,
                 CURLOPT_TIMEOUT        => 120
             ));
@@ -149,9 +149,9 @@ class Firemanager
                 return 'Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl);
             }
             curl_close($curl);
-            $data = explode("vegur",$resp);
-            return json_decode($data[1]);
-           // return $resp;
+            /*$data = explode("vegur",$resp);
+            return json_decode($data[1]);*/
+            return $resp;
     }//
 
 
@@ -183,7 +183,7 @@ class Firemanager
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_URL            => $service_url,
                 CURLOPT_CUSTOMREQUEST   =>  'PUT',
-                CURLOPT_HEADER         => true,
+                //CURLOPT_HEADER         => true,
                 CURLOPT_CONNECTTIMEOUT => 120,
                 CURLOPT_TIMEOUT        => 120
             ));
@@ -192,9 +192,9 @@ class Firemanager
                 return 'Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl);
             }
             curl_close($curl);
-            $data = explode("vegur",$resp);
-            return json_decode($data[1]);
-            //return $resp;
+            /*$data = explode("vegur",$resp);
+            return json_decode($data[1]);*/
+            return $resp;
     }//
 
 
@@ -216,7 +216,7 @@ class Firemanager
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_URL            => $service_url,
                 CURLOPT_CUSTOMREQUEST   =>  'PUT',
-                CURLOPT_HEADER         => true,
+                //CURLOPT_HEADER         => true,
                 CURLOPT_CONNECTTIMEOUT => 120,
                 CURLOPT_TIMEOUT        => 120
             ));
@@ -225,9 +225,9 @@ class Firemanager
                 return 'Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl);
             }
             curl_close($curl);
-            $data = explode("vegur",$resp);
-            return json_decode($data[1]);
-            //return $resp;
+            /*$data = explode("vegur",$resp);
+            return json_decode($data[1]);*/
+            return $resp;
     }//
 
 
@@ -259,7 +259,7 @@ class Firemanager
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_URL            => $service_url,
                 CURLOPT_CUSTOMREQUEST   =>  'PUT',
-                CURLOPT_HEADER         => true,
+                //CURLOPT_HEADER         => true,
                 CURLOPT_CONNECTTIMEOUT => 120,
                 CURLOPT_TIMEOUT        => 120
             ));
@@ -268,9 +268,9 @@ class Firemanager
                 return 'Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl);
             }
             curl_close($curl);
-            $data = explode("vegur",$resp);
-            return json_decode($data[1]);
-            //return $resp;
+            /*$data = explode("vegur",$resp);
+            return json_decode($data[1]);*/
+            return $resp;
     }//
 
 
@@ -293,7 +293,7 @@ class Firemanager
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_URL            => $service_url,
                 CURLOPT_CUSTOMREQUEST   =>  'PUT',
-                CURLOPT_HEADER         => true,
+                //CURLOPT_HEADER         => true,
                 CURLOPT_CONNECTTIMEOUT => 120,
                 CURLOPT_TIMEOUT        => 120
             ));
@@ -302,9 +302,9 @@ class Firemanager
                 return 'Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl);
             }
             curl_close($curl);
-            $data = explode("vegur",$resp);
-            return json_decode($data[1]);
-            //return $resp;
+            /*$data = explode("vegur",$resp);
+            return json_decode($data[1]);*/
+            return $resp;
     }//
 
 
@@ -326,7 +326,7 @@ class Firemanager
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_URL            => $service_url,
                 CURLOPT_CUSTOMREQUEST   =>  'PUT',
-                CURLOPT_HEADER         => true,
+                //CURLOPT_HEADER         => true,
                 CURLOPT_CONNECTTIMEOUT => 120,
                 CURLOPT_TIMEOUT        => 120
             ));
@@ -335,9 +335,9 @@ class Firemanager
                 return 'Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl);
             }
             curl_close($curl);
-            $data = explode("vegur",$resp);
-            return json_decode($data[1]);
-            //return $resp;
+            /*$data = explode("vegur",$resp);
+            return json_decode($data[1]);*/
+            return $resp;
     }//
 
 
@@ -360,7 +360,7 @@ class Firemanager
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_URL            => $service_url,
                 CURLOPT_CUSTOMREQUEST   =>  'DELETE',
-                CURLOPT_HEADER         => true,
+                //CURLOPT_HEADER         => true,
                 CURLOPT_CONNECTTIMEOUT => 120,
                 CURLOPT_TIMEOUT        => 120
             ));
@@ -369,9 +369,9 @@ class Firemanager
                 return 'Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl);
             }
             curl_close($curl);
-            $data = explode("vegur",$resp);
-            return json_decode($data[1]);
-            //return $resp;
+            /*$data = explode("vegur",$resp);
+            return json_decode($data[1]);*/
+            return $resp;
     }//
 
 }
