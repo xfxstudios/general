@@ -1,19 +1,46 @@
 <?php
+namespace xfxstudios\general;
+/**
+ * Autor: Carlos Quintero 
+ * Corporación HITCEL
+ * Requiere para su uso 2 Carpetas en la raiz de application en Codeigniter
+ * Carpetas: cargas y services
+ * Colocar el Archivo de cuentas de servicios json en la carpeta services
+ * Ejemplo de carga:
+ * ------------------------------------------------
+ * use xfxstudios\general\Cloudstorage;
+ * 
+ * $this->storage = new Cloudstorage(
+ *      'Aquí Bucket Google Gloud Storage',
+ *      'Aquí Proyecto',
+ *      'Aquí nombre de archivo json de servicio'
+ * );
+ * -------------------------------------------------
+ * 
+ * requiere de la libreria de Cloud Storage
+ * Ejecutar en la raiz de application
+ * composer require google/cloud-storage
+ * SOLO SI NO SE TIENE INSTALADA
+*/
 
 use Google\Cloud\Storage\StorageClient;
-use xfxstudios\general\GeneralClass;
 
 class Cloudstorage
 {
+    private $ci;
+    private $bucket;
+    private $storage;
+    private $ruta;
+    private $project;
 
-    public function __construct($bucket, $project, $json){
-        $this->general = new GeneralClass();
+    public function __construct($b/*Bucket*/, $p/*Proyecto*/, $j/*Json*/){
+        $this->project = $p;
         $this->storage = new StorageClient([
             //'keyFilePath' => APPPATH.'services/hitpagos-6c5d1793e2f3.json',
             'keyFilePath' => APPPATH.'services/'.$json,
-            'projectId' => $project
+            'projectId' => $this->project
         ]);
-        $this->bucket = $this->storage->bucket($bucket);
+        $this->bucket = $this->storage->bucket($b);
 
         $this->ci =& get_instance();
 
