@@ -32,12 +32,14 @@ class Cloudstorage
     private $storage;
     private $ruta;
     private $project;
+    private $json;
 
     public function __construct($b/*Bucket*/, $p/*Proyecto*/, $j/*Json*/){
         $this->project = $p;
+        $this->json = $j;
         $this->storage = new StorageClient([
             //'keyFilePath' => APPPATH.'services/hitpagos-6c5d1793e2f3.json',
-            'keyFilePath' => APPPATH.'services/'.$json,
+            'keyFilePath' => APPPATH.'services/'.$this->json,
             'projectId' => $this->project
         ]);
         $this->bucket = $this->storage->bucket($b);
