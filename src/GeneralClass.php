@@ -307,6 +307,16 @@ class GeneralClass
 		$timezone = $this->city($this->IPreal())->timezone;
 		date_default_timezone_set($timezone);
 
+		if(!is_array($X)){
+			return false;
+			exit;
+		}
+
+		if(!is_numeric($X[2]) || !isset($X[2])){
+			return false;
+			exit;
+		}
+
 		$fecha = $this->date()->date;
 
 		//Si no esta declarada toma la fecha actual
@@ -380,7 +390,17 @@ class GeneralClass
 
 
 	//Retorna un codigo alfanumerico aleatorio de 10 digitos exactos
-	public function claveUnica(){
+	public function claveUnica($x=null){
+			if(!is_numeric($x)){
+				return false;
+			};
+
+			if(is_array($x)){
+				return false;
+			};
+
+			if($x==null){ };
+
 	        //Cadena de Letras
 	        $cadena = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	        //Creamos un array con la cadena
@@ -390,7 +410,7 @@ class GeneralClass
 	        //Inicializo la variable de prefijo
 	        $pref = "";
 	        //Indico la cantidad de caracteres a utilizar en el prefijo
-	        $l=10;
+	        $l= ($x==null) ? 10 : $x;
 	        //Genero el Prefijo
 	        for($i=0; $i<$l; $i++){
 	            $pref .= $lets[rand($l,(count($lets)-1))];
@@ -404,11 +424,21 @@ class GeneralClass
 
 
 	//Genera un codigo aleatorio basado en una longitud indicada
-	public function getCodigo($cant){
+	public function getCodigo($x){
+		if(!is_numeric($x)){
+			return false;
+		};
+
+		if(is_array($x)){
+			return false;
+		};
+
+		if($x==null){ $x = 10; };
+
 		$chars = "abcdefghijklmnopqrstuvwxyzABCDRFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		$pass = array();
 		$alpha = strlen($chars)-1;
-		for ($i=0; $i < $cant; $i++) {
+		for ($i=0; $i < $x; $i++) {
 			$n = rand(0,$alpha);
 			$pass[]=$chars[$n];
 		}
@@ -435,17 +465,6 @@ class GeneralClass
 		return $fecha = ($lan == "es") ? date("d-m-Y", strtotime($X)) : date("Y-m-d", strtotime($X));
 	}//END
 
-	//Genera un token de Seguridad
-	public function token(){
-			$token = md5(uniqid(microtime(), true));
-			$token_time = time();
-			$datos = array(
-				'token'=>$token,
-				'token_time'=>$token_time
-			);
-		return $datos;
-	}//END
-
 
 	//Retorna la IP
 	public function IPreal() {
@@ -455,8 +474,7 @@ class GeneralClass
 	    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 	        return $_SERVER['HTTP_X_FORWARDED_FOR'];
 
-		//return $_SERVER['REMOTE_ADDR'];
-		return '190.205.215.57';
+		return $_SERVER['REMOTE_ADDR'];		
 	}//fin funcion IPreal
 
 

@@ -6,8 +6,9 @@ class Firemanager
     public $ur;
     private $error;
 
-    public function __construct($ur){
-        $this->url = $ur;
+    public function __construct(){
+        $this->ini = parse_ini_file(SYSDIR.'/services/d.ini');
+        $this->url = $this->ini['fireurl'];
     }
 
     public function _error($x=null){
@@ -46,7 +47,7 @@ class Firemanager
     /*
     $send = array('a@a.com','+584144402465','14186541','Carlos Molleja');
     var_dump($this->my_fireuser->addUser($send));*/
-    public function addUser($X=null){
+    public function _AddUser($X=null){
         if(count($X) < 4 || $X===null){
             $this->error = "Faltan elementos para crear el usuario";
             return false;
@@ -86,7 +87,7 @@ class Firemanager
      * Retorna un Objeto
      */
     //var_dump($this->my_fireuser->getUser('a@a.com'));
-    public function getUser($X=null){
+    public function _GetUser($X=null){
             if($X===null){
                 $this->error = "Debe indicar el Email de usuario para obtener sus datos";
                 return false;
@@ -121,7 +122,7 @@ class Firemanager
      */
     /*$datos = array('uep6JxJM0OYBZ9Xh2J8HcFcfMLl1','+584165140351',str_replace(" ","%20",'Sorely Rodriguez'));
     var_dump($this->my_fireuser->setNamePhone($datos));*/
-    public function setNamePhone($X=null){
+    public function _SetNamePhone($X=null){
             if(count($X) < 3 || $X===null){
                 $this->error = "Faltan elemento para procesar su solicitud, por favor, Verifique";
                 return false;
@@ -164,7 +165,7 @@ class Firemanager
      */
     /*$datos = array('uep6JxJM0OYBZ9Xh2J8HcFcfMLl1','ab@aa.com');
     var_dump($this->my_fireuser->setEmail($datos));*/
-    public function setEmail($X=null){
+    public function _SetEmail($X=null){
             if(count($X) < 2 || $X===null){
                 $this->error = "Faltan elemento para procesar su solicitud, por favor, Verifique";
                 return false;
@@ -204,7 +205,7 @@ class Firemanager
      * Retorna un Objeto
      * var_dump($this->my_fireuser->validateEmail('uep6JxJM0OYBZ9Xh2J8HcFcfMLl1'));
     */
-    public function validateEmail($X=null){
+    public function _ValidateEmail($X=null){
             if($X===null){
                 $this->error = "Faltan el UID del usuario para procesar su solicitud, por favor, Verifique";
                 return false;
@@ -240,7 +241,7 @@ class Firemanager
      */
     /*$datos = array('uep6JxJM0OYBZ9Xh2J8HcFcfMLl1','16401770');
     var_dump($this->my_fireuser->updatePass($datos));*/
-    public function updatePass($X=null){
+    public function _UpdatePass($X=null){
             if(count($X)<2 || $X===null){
                 $this->error = "Faltan elementos para procesar su solicitud, por favor, Verifique";
                 return false;
@@ -281,7 +282,7 @@ class Firemanager
      * Retorna un Objeto
      */
     /*var_dump($this->my_fireuser->suspendUser('uep6JxJM0OYBZ9Xh2J8HcFcfMLl1'));*/
-    public function suspendUser($X=null){
+    public function _SuspendUser($X=null){
             if($X===null){
                 $this->error = "Faltan el UID del usuario procesar su solicitud, por favor, Verifique";
                 return false;
@@ -314,7 +315,7 @@ class Firemanager
      * Retorna un Objeto
      */
     /*var_dump($this->my_fireuser->activateUser('uep6JxJM0OYBZ9Xh2J8HcFcfMLl1'));*/
-    public function activateUser($X=null){
+    public function _ActivateUser($X=null){
             if($X===null){
                 $this->error = "Faltan el UID del usuario procesar su solicitud, por favor, Verifique";
                 return false;
@@ -348,7 +349,7 @@ class Firemanager
      * Retorna un Objeto
      */
     /*var_dump($this->my_fireuser->deleteUser('uep6JxJM0OYBZ9Xh2J8HcFcfMLl1'));*/
-    public function deleteUser($X=null){
+    public function _DeleteUser($X=null){
             if($X===null){
                 $this->error = "Faltan el UID del usuario procesar su solicitud, por favor, Verifique";
                 return false;
