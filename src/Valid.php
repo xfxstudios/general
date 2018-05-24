@@ -143,8 +143,6 @@ class Valid
             );
         }//
 
-        
-        
         private function _Aud()
         {
             $aud = '';
