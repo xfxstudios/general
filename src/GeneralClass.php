@@ -348,9 +348,10 @@ class GeneralClass
 			'microtime' => date("H:i a"),
 			'large'     => strftime("%A, %e %B %Y - %H:%M hrs"),
 			'extra'     => strftime('%A %e de %B del %Y'),
-			'iso'		=> date("c"),
-			'seconds'	=> date("U"),
-			'format'	=> date("r")
+			'iso'       => date("c"),
+			'seconds'   => date("U"),
+			'format'    => date("r"),
+			'unix'      => time()
 		);
 		return $ret;
 	}//END

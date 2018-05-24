@@ -1,63 +1,151 @@
 <?php
 namespace xfxstudios\general;
+/**
+ * Autor: Carlos Quintero 
+ * Corporación HITCEL
+ * Requiere para su uso del archivo d.ini de la carpeta services
+ * Ejemplo de carga:
+ * ------------------------------------------------
+ * use xfxstudios\general\Valid;
+ * $this->valid = new Valid();
+ * -------------------------------------------------
+ * 
+ * requiere de la libreria de Firebase JWT
+ * Ejecutar en la raiz de application
+ * composer require firebase/php-jwt
+ * SOLO SI NO SE TIENE INSTALADA o IMPLEMENTADA
+ * 
+ * Funciones
+ * _SignIn -> Genera el Tocken con la Data que recibe en formato array
+ * _Check -> Valida la integridad del tocken
+ * _GetData -> Retorna la data almacenada en el Tocken
+ * _Aud -> Genera una cadena codificada con la informacion del servidor
+*/
 
 use Firebase\JWT\JWT;
+use xfxstudios\general\GeneralClass;
 
 class Valid
    
     {
-        private static $_secret_key = 'Sdw1s9x8@';
-        private static $_encrypt = ['HS256'];
-        private static $_aud = null;
+        private $ci;
+        private $_secret_key;
+        private $_encrypt;
+        private $_aud = null;
 
         public function __construct(){
-            $ini = parse_ini_file(APPPATH.'services/d.ini');
-            $this->_secret_key = $ini['secret_key'];
-            $this->_encrypt = $ini['encript'];
-        }
+            $this->ci =& get_instance();
+            $this->ini = parse_ini_file(APPPATH.'services/d.ini');
+            $this->_secret_key = $this->ini['secret_key'];
+            $this->_encrypt = [$this->ini['encrypt']];
+            $this->gen = new GeneralClass();
+        }//
         
-        public static function _SignIn($data)
+        public function _SignIn($data=null)
         {
-            $time = time();
+            if($data==null){
+                $err = array(
+                    'error'   => true,
+                    'message' => "Invalid or empty data supplied."
+                );
+                return $err;
+            }
+            if(!is_array($data)){
+                $err = array(
+                    'error'   => true,
+                    'message' => "Invalid data format supplied."
+                );
+                return $err;
+            }
+
+            $time = $this->gen->date()->unix;
             
             $token = array(
-                'exp' => $time + (60*60),
-                'aud' => self::_Aud(),
+                'iat'  => $time,
+                'exp'  => $time + (60*60*$this->ini['hours']),
+                'err'  => "",
+                'aud'  => $this->_Aud(),
                 'data' => $data
             );
+
+            try{
+                $encode =  JWT::encode($token, $this->_secret_key);
+                return $encode;
+            }catch(Exception $e){
+                $err = array(
+                    'error'   => true,
+                    'message' => $e->getMessage()
+                );
+                return $err;
+            }
     
-            return JWT::encode($token, self::$secret_key);
-        }
+        }//
+
+
         
-        public static function _Check($token)
+        public function _Check($token=null)
         {
+            if($token==null){
+                $err = array(
+                    'error'   => true,
+                    'message' => "Invalid token supplied."
+                );
+                return $err;
+            }
             if(empty($token))
             {
-                throw new Exception("Invalid token supplied.");
+                $err = array(
+                    'error'   => true,
+                    'message' => "Invalid token supplied."
+                );
+                return $err;
             }
-            
-            $decode = JWT::decode(
-                $token,
-                self::$secret_key,
-                self::$encrypt
-            );
-            
-            if($decode->aud !== self::_Aud())
-            {
-                throw new Exception("Invalid user logged in.");
+            try{
+
+                $decode = JWT::decode(
+                    $token,
+                    $this->_secret_key,
+                    $this->_encrypt
+                );
+                
+                if($decode->aud !== $this->_Aud())
+                {
+                    $err = array(
+                        'error'   => true,
+                        'message' => "Invalid user logged in."
+                    );
+                    return $err;
+                }
+
+                return $decode;
+
+            }catch(\Firebase\JWT\SignatureInvalidException $e){
+                $err = array(
+                    'error'   => true,
+                    'message' => $e->getMessage()
+                );
+                return $err;
             }
-        }
+        }//
+
+
         
-        public static function _GetData($token)
+        public function _GetData($token=null)
         {
+            if($token==null){
+                return false;
+            }
+
             return JWT::decode(
                 $token,
-                self::$secret_key,
-                self::$encrypt
-            )->data;
-        }
+                $this->_secret_key,
+                $this->_encrypt
+            );
+        }//
+
         
-        private static function _Aud()
+        
+        private function _Aud()
         {
             $aud = '';
             
@@ -73,5 +161,5 @@ class Valid
             $aud .= gethostname();
             
             return sha1($aud);
-        }
+        }//
     }
