@@ -38,7 +38,6 @@ class Cloudstorage
         $this->project = $p;
         $this->json = $j;
         $this->storage = new StorageClient([
-            //'keyFilePath' => APPPATH.'services/hitpagos-6c5d1793e2f3.json',
             'keyFilePath' => APPPATH.'services/'.$this->json,
             'projectId' => $this->project
         ]);
