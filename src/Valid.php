@@ -35,7 +35,7 @@ class Valid
 
         public function __construct(){
             $this->ci =& get_instance();
-            $this->ini = parse_ini_file(SYSDIR.'services/d.ini');
+            $this->ini = parse_ini_file(SYSDIR.'/services/d.ini');
             $this->_secret_key = $this->ini['secret_key'];
             $this->_encrypt = [$this->ini['encrypt']];
             $this->gen = new GeneralClass();
