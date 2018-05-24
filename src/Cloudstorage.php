@@ -34,24 +34,25 @@ class Cloudstorage
     private $project;
     private $json;
 
-    public function __construct($b/*Bucket*/, $p/*Proyecto*/, $j/*Json*/){
-        $this->project = $p;
-        $this->json = $j;
+    public function __construct(){
+        $this->ini = parse_ini_file(APPPATH.'services/d.ini');
+        $this->project = $this->ini['project'];
+        $this->json = $this->ini['cjson'];
         $this->storage = new StorageClient([
-            'keyFilePath' => APPPATH.'services/'.$this->json,
+            'keyFilePath' => APPPATH.$this->ini['services'].'/'.$this->json,
             'projectId' => $this->project
         ]);
-        $this->bucket = $this->storage->bucket($b);
+        $this->bucket = $this->storage->bucket($this->ini['bucket']);
 
         $this->ci =& get_instance();
 
-        $this->ruta = APPPATH."/cargas/";
+        $this->ruta = APPPATH."/".$this->ini['upload']."/";
     }
     //carga archivos al bucket seleccionado
     //Recibe un array como parametro
     //Ejemplo: $this->my_storage->cargar(array('type'=>'public','name'=>'nombredearchivo'));//Para archivos con enlace publico
     //Ejemplo: $this->my_storage->cargar(array('name'=>'nombredearchivo'));//Para rchivos sin enlace publico
-    public function cargar($X=null){
+    public function _Cargar($X=null){
 
         if($X==null){
             return false;
@@ -108,7 +109,7 @@ class Cloudstorage
     //Elimina un objeto u archivo
     //Recibe el nombre como parametro para ser eliminado del bucket y el tipo
     //ehemplo $this->my_storage->borrar(array('nombre','tipo'))
-    public function borrar($X=null){
+    public function _Borrar($X=null){
 
         switch($X[0]){
             case null:
@@ -150,7 +151,7 @@ class Cloudstorage
 
     //Descarga un archivo/imagen del bucket
     //ejemplo: $this->my_storage->descarga(array('ruta'=>'','name'=>''));
-    public function descarga($X){
+    public function _Descarga($X){
         $object = $this->bucket->object($X['name']);
         $object->downloadToFile($X['ruta'].$X['name']);
     }
