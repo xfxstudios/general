@@ -35,11 +35,11 @@ class Cloudstorage
     private $json;
 
     public function __construct(){
-        $this->ini = parse_ini_file(APPPATH.'services/d.ini');
+        $this->ini = parse_ini_file(SYSDIR.'services/d.ini');
         $this->project = $this->ini['project'];
         $this->json = $this->ini['cjson'];
         $this->storage = new StorageClient([
-            'keyFilePath' => APPPATH.$this->ini['services'].'/'.$this->json,
+            'keyFilePath' => SYSDIR.$this->ini['services'].'/'.$this->json,
             'projectId' => $this->project
         ]);
         $this->bucket = $this->storage->bucket($this->ini['bucket']);
