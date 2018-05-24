@@ -63,7 +63,7 @@ class Valid
             $token = array(
                 'iat'  => $time,
                 'exp'  => $time + (60*60*$this->ini['hours']),
-                'err'  => "",
+                'error'  => false,
                 'aud'  => $this->_Aud(),
                 'data' => $data
             );
@@ -88,7 +88,7 @@ class Valid
             if($token==null){
                 $err = array(
                     'error'   => true,
-                    'message' => "Invalid token supplied."
+                    'message' => "Invalid or empty token supplied."
                 );
                 return $err;
             }
@@ -96,7 +96,7 @@ class Valid
             {
                 $err = array(
                     'error'   => true,
-                    'message' => "Invalid token supplied."
+                    'message' => "Invalid or empty token supplied."
                 );
                 return $err;
             }
@@ -134,6 +134,10 @@ class Valid
         {
             if($token==null){
                 return false;
+            }
+            
+            if($this->_Check($token)->error){
+                return $this->_Check($token);
             }
 
             return JWT::decode(
