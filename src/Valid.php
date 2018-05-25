@@ -82,6 +82,48 @@ class Valid
         }//
 
 
+        public function _SignInRemote($data=null)
+        {
+            if($data==null){
+                $err = (object) array(
+                    'error'   => true,
+                    'message' => "Invalid or empty data supplied."
+                );
+                return $err;
+            }
+            if(!is_array($data)){
+                $err = (object) array(
+                    'error'   => true,
+                    'message' => "Invalid data format supplied."
+                );
+                return $err;
+            }
+
+            $time = $this->gen->date()->unix;
+            
+            $token = array(
+                'iat'    => $time,
+                'exp'    => $time + (60*60*$this->ini['hours']),
+                'error'  => false,
+                'aud'    => $this->_Aud(),
+                'remote' => true,
+                'data'   => $data
+            );
+
+            try{
+                $encode =  JWT::encode($token, $this->_secret_key);
+                return $encode;
+            }catch(\Exception $e){
+                $err = (object) array(
+                    'error'   => true,
+                    'message' => $e->getMessage()
+                );
+                return $err;
+            }
+    
+        }//
+
+
         
         public function _Check($token=null)
         {
@@ -116,6 +158,44 @@ class Valid
                     );
                     return $err;
                 }
+
+                return $decode;
+
+            }catch(\Exception $e){
+                $err = (object) array(
+                    'error'   => true,
+                    'message' => $e->getMessage()
+                );
+                return $err;
+            }
+        }//
+
+
+
+        public function _CheckRemote($token=null)
+        {
+            if($token==null){
+                $err = (object) array(
+                    'error'   => true,
+                    'message' => "Invalid token supplied."
+                );
+                return $err;
+            }
+            if(empty($token))
+            {
+                $err = (object) array(
+                    'error'   => true,
+                    'message' => "Invalid token supplied."
+                );
+                return $err;
+            }
+            try{
+
+                $decode = JWT::decode(
+                    $token,
+                    $this->_secret_key,
+                    $this->_encrypt
+        );
 
                 return $decode;
 
