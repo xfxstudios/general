@@ -61,17 +61,17 @@ class Valid
             $time = $this->gen->date()->unix;
             
             $token = array(
-                'iat'  => $time,
-                'exp'  => $time + (60*60*$this->ini['hours']),
-                'error'  => false,
-                'aud'  => $this->_Aud(),
-                'data' => $data
+                'iat'   => $time,
+                'exp'   => $time + (60*60*$this->ini['hours']),
+                'error' => false,
+                'aud'   => $this->_Aud(),
+                'data'  => $data
             );
 
             try{
                 $encode =  JWT::encode($token, $this->_secret_key);
                 return $encode;
-            }catch(Exception $e){
+            }catch(\Exception $e){
                 $err = (object) array(
                     'error'   => true,
                     'message' => $e->getMessage()
@@ -88,7 +88,7 @@ class Valid
             if($token==null){
                 $err = (object) array(
                     'error'   => true,
-                    'message' => "Invalid or empty token supplied."
+                    'message' => "Invalid token supplied."
                 );
                 return $err;
             }
@@ -96,7 +96,7 @@ class Valid
             {
                 $err = (object) array(
                     'error'   => true,
-                    'message' => "Invalid or empty token supplied."
+                    'message' => "Invalid token supplied."
                 );
                 return $err;
             }
@@ -119,7 +119,7 @@ class Valid
 
                 return $decode;
 
-            }catch(\Firebase\JWT\SignatureInvalidException $e){
+            }catch(\Exception $e){
                 $err = (object) array(
                     'error'   => true,
                     'message' => $e->getMessage()
@@ -139,12 +139,21 @@ class Valid
             if($this->_Check($token)->error){
                 return $this->_Check($token);
             }
+            try{
+                $info =  JWT::decode(
+                    $token,
+                    $this->_secret_key,
+                    $this->_encrypt
+                );
+                return $info;
 
-            return JWT::decode(
-                $token,
-                $this->_secret_key,
-                $this->_encrypt
-            );
+            }catch(\Exception $e){
+                $err = (object) array(
+                    'error'   => true,
+                    'message' => $e->getMessage()
+                );
+                return $err;
+            }
         }//
 
         private function _Aud()
