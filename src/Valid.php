@@ -44,14 +44,14 @@ class Valid
         public function _SignIn($data=null)
         {
             if($data==null){
-                $err = array(
+                $err = (object) array(
                     'error'   => true,
                     'message' => "Invalid or empty data supplied."
                 );
                 return $err;
             }
             if(!is_array($data)){
-                $err = array(
+                $err = (object) array(
                     'error'   => true,
                     'message' => "Invalid data format supplied."
                 );
@@ -72,7 +72,7 @@ class Valid
                 $encode =  JWT::encode($token, $this->_secret_key);
                 return $encode;
             }catch(Exception $e){
-                $err = array(
+                $err = (object) array(
                     'error'   => true,
                     'message' => $e->getMessage()
                 );
@@ -86,7 +86,7 @@ class Valid
         public function _Check($token=null)
         {
             if($token==null){
-                $err = array(
+                $err = (object) array(
                     'error'   => true,
                     'message' => "Invalid or empty token supplied."
                 );
@@ -94,7 +94,7 @@ class Valid
             }
             if(empty($token))
             {
-                $err = array(
+                $err = (object) array(
                     'error'   => true,
                     'message' => "Invalid or empty token supplied."
                 );
@@ -110,7 +110,7 @@ class Valid
                 
                 if($decode->aud !== $this->_Aud())
                 {
-                    $err = array(
+                    $err = (object) array(
                         'error'   => true,
                         'message' => "Invalid user logged in."
                     );
@@ -120,7 +120,7 @@ class Valid
                 return $decode;
 
             }catch(\Firebase\JWT\SignatureInvalidException $e){
-                $err = array(
+                $err = (object) array(
                     'error'   => true,
                     'message' => $e->getMessage()
                 );
