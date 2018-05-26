@@ -199,5 +199,19 @@ class Myemail
             return $response->getData();
     }//
 
+    public function ex(){
+        $v = 0;
+
+        try{
+            if($v==0){
+                throw new Exception("Error Processing Request", 1);
+            }
+        }catch(Emailexception $e){
+            return $e->getMessage();
+        }
+        
+
+    }
+
 }
 
