@@ -35,8 +35,10 @@ class GeneralClass
 		}
 		if(!isset($_SESSION['lang']) && isset($_COOKIE['lang'])){
 			$idi = $_COOKIE['lang'];
-		}else{
+		}else if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){
 			$idi = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+		}else{
+			$idi = "en";
 		}
 
 		return ($idi=='es') ? 'es' : 'en';
