@@ -25,12 +25,14 @@
     },
     "autoload": {
         "psr-4": {
-            "xfxstudios\\general\\": "src"
+            "xfxstudios\\general\\": "src",
+            "xfxstudios\\Exception\\": "src/Exception"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "xfxstudios\\general\\": "tests"
+            "xfxstudios\\general\\": "tests",
+            "xfxstudios\\Exception\\": "tests"
         }
     },
     "config": {
