@@ -77,6 +77,7 @@ class Myemail
         $this->codeFile    = $X[3];
         return $this;
     }
+    
 
     private function contentType($X){
         switch ($X) {
