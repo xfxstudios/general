@@ -22,6 +22,10 @@ class Myemail
     private $hiddenCopy = FALSE;
     private $hiddenCopyMail;
     private $hiddenCopName;
+    private $attachment = FALSE;
+    private $cType;
+    private $fileName;
+    private $codeFile;
 
     public function __construct(){
         $this->ci =& get_instance();
@@ -64,6 +68,64 @@ class Myemail
         $this->template     = $X[0];
         $this->templateName = $X[1];
         return $this;
+    }
+    
+    public function attachFile($X){
+        $this->attachment = $X[0];
+        $this->cType       = $this->contentType($X[1]);
+        $this->fileName    = $X[2];
+        $this->codeFile    = $X[3];
+        return $this;
+    }
+
+    private function contentType($X){
+        switch ($X) {
+            case 'jpg':
+            case 'jpeg':
+                return 'image/jpeg';
+            break;
+            
+            case 'png':
+                return 'image/png';
+            break;
+            
+            case 'doc':
+                return 'application/msword';
+            break;
+            
+            case 'docx':
+                return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+            break;
+            
+            case 'pdf':
+                return 'application/pdf';
+            break;
+            
+            case 'ppt':
+                return 'application/vnd.ms-powerpoint';
+            break;
+            
+            case 'pptx':
+                return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+            break;
+            
+            case 'xls':
+                return 'application/vnd.ms-excel';
+            break;
+            
+            case 'xlsx':
+                return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+            break;
+            
+            case 'json':
+                return 'application/json';
+            break;
+            
+            case 'csv':
+                return 'text/csv';
+            break;
+        }
+
     }
 
     private function armed(){
@@ -112,6 +174,16 @@ class Myemail
         $datos['TextPart'] = $this->plainText;
         $datos['HTMLPart'] = $data;
 
+        if($this->attachment){
+            $datos['Attachments'] = [
+                [
+                    'ContentType'   => $this->cType,
+                    'Filename'      => $this->fileName,
+                    'Base64Content' => $this->codeFile
+                ]
+            ];
+        }
+
         $body = [
             'Messages' => [
                 $datos
@@ -127,3 +199,4 @@ class Myemail
     }//
 
 }
+
