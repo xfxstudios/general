@@ -1,6 +1,6 @@
 <?php
 
-namespace xfxstudios\general\exceptions;
+namespace xfxstudios\Exception;
 
 class Emailexception extends Exception
 {
