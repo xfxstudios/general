@@ -314,7 +314,7 @@ class Myemail
         $data = null;
         if($this->template){
             $file = file_get_contents(APPPATH.'/plantillas/'.$this->templateName);
-            if(!$file){
+            if($file===FALSE){
                 throw new Emailexception("No se ha podido recuperar el archivo ".$this->templateName, 1);
                 exit;
             }
