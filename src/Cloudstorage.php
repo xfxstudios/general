@@ -24,6 +24,7 @@ namespace xfxstudios\general;
 */
 
 use Google\Cloud\Storage\StorageClient;
+use Google\Cloud\Core\Exception\GoogleException;
 use xfxstudios\Exception\Storageexception;
 
 class Cloudstorage
@@ -35,9 +36,9 @@ class Cloudstorage
     private $project;
     private $json;
     private $name;
-    private $path = FALSE;
+    private $folder = FALSE;
     private $file;
-    private $ext;
+    private $ext = FALSE;
 
     public function __construct(){
         $this->ini = parse_ini_file(SYSDIR.'/services/d.ini');
@@ -51,7 +52,7 @@ class Cloudstorage
 
         $this->ci =& get_instance();
         
-        $this->ruta = ($this->path) ? APPPATH."/".$this->path."/" : APPPATH."/".$this->ini['upload']."/";
+        $this->ruta = ($this->folder) ? APPPATH."/".$this->folder."/" : APPPATH."/".$this->ini['upload']."/";
     }
 
     public function nameFile($X=null){
@@ -77,23 +78,47 @@ class Cloudstorage
             exit;
         }
         $this->file = json_encode($X);
-        $this->ext = strtolower($X['data']['file_ext']);
+        $this->ext = strtolower($X['file_ext']);
         return $this;
     }
 
-    public function path($X=null){
+    public function folder($X=null){
         if($X==null){
             throw new Storageexception("No se ha indicado una Ruta válida",1,array('errorCode'=>'206'));
+            exit;
+        }
+        if(!file_exists(APPPATH.'/'.$X)){
+            throw new Storageexception("El directorio indicado no existe",1,array('errorCode'=>'220'));
             exit;
         }
         $this->path = $X;
         return $this;
     }
 
-    //carga archivos al bucket seleccionado
-    public function _Cargar(){
+    public function _extension($X=null){
+        $e = ['jpg','jpeg','png','doc','docx','ppt','pptx','xls','xlsx','pdf','mp4'];
+        if($X==null){
+            throw new Storageexception("No se ha enviado la Extensión del Archivo",1,array('errorCode'=>'222'));
+            exit;
+        }
+        if(!in_array($X)){
+            throw new Storageexception("La Extensión enviada no es Válida",1,array('errorCode'=>'224'));
+            exit;
+        }
+        $va = explode(".", $this->name);
+        if(!in_array($va[1])){
+            throw new Storageexception("La Extensión enviada no coincide con el nombre enviado",1,array('errorCode'=>'226'));
+            exit;
+        }
 
-        if(empty($this_>ext)){
+        $this->ext = str_replace(".","",$X);
+        return $this;
+
+    }
+
+    //carga archivos al bucket seleccionado
+    public function _Load(){
+        if(!$this->ext){
             throw new Storageexception("No se ha detectado la Extensión del Archivo",1,array('errorCode'=>'204'));
             exit;
         }
@@ -134,9 +159,13 @@ class Cloudstorage
             'predefinedAcl' => 'publicRead'
         ];
 
-            $object = $this->bucket->upload(
-                fopen($this->ruta.$this->name, 'r'),$options
-            );
+            try{
+                $object = $this->bucket->upload(
+                    fopen($this->ruta.$this->name, 'r'),$options
+                );
+            }catch(GoogleException $e){
+                return $e->getMessage();
+            }
 
             unlink($this->ruta.$this->name);
             if(file_exists($this->ruta.$this->name)){
@@ -147,35 +176,26 @@ class Cloudstorage
     }
 
     //Elimina un objeto u archivo
-    //Recibe el nombre como parametro para ser eliminado del bucket y el tipo
-    //ehemplo $this->my_storage->borrar(array('nombre','tipo'))
-    public function _Borrar($X=null){
+    public function _delFile(){
 
-        switch($X[0]){
-            case null:
-                return false;
-                exit;
-            break;
-        };
-
-        switch($X[1]){
-            case '.jpg':
-            case '.jpeg':
-            case '.png':
+        switch($this->ext){
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
                 $folder = 'images/';
             break;
 
-            case '.doc';
-            case '.docx';
-            case '.ppt';
-            case '.pptx';
-            case '.xls';
-            case '.xlsx';
-            case '.pdf';
+            case 'doc';
+            case 'docx';
+            case 'ppt';
+            case 'pptx';
+            case 'xls';
+            case 'xlsx';
+            case 'pdf';
                 $folder = 'documents/';
             break;
 
-            case '.mp4':
+            case 'mp4':
                 $folder = 'videos/';
             break;
 
@@ -184,16 +204,59 @@ class Cloudstorage
             break;
         }
 
-        $imagen = $this->bucket->object($folder.$X[0]);
-        $imagen->delete();
-    
+        try{
+            $imagen = $this->bucket->object($folder.$this->name);
+            $imagen->delete();
+        }catch(GoogleException $e){
+            return $e->getMessage();
+        }
+
+        return "200";
     }
 
     //Descarga un archivo/imagen del bucket
-    //ejemplo: $this->my_storage->descarga(array('ruta'=>'','name'=>''));
-    public function _Descarga($X){
-        $object = $this->bucket->object($X['name']);
-        $object->downloadToFile($X['ruta'].$X['name']);
+    public function _downFile(){
+
+        switch($this->ext){
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+                $folder = 'images/';
+            break;
+
+            case 'doc';
+            case 'docx';
+            case 'ppt';
+            case 'pptx';
+            case 'xls';
+            case 'xlsx';
+            case 'pdf';
+                $folder = 'documents/';
+            break;
+
+            case 'mp4':
+                $folder = 'videos/';
+            break;
+
+            default:
+                $folder = 'uncategorized/';
+            break;
+        }
+
+        $d = APPPATH.'/'.$this->folder.$this->name;
+        try{
+            $object = $this->bucket->object($folder.$this->name);
+            $object->downloadToFile($d);
+        }catch(GoogleException $e){
+            return $e->getMessage();
+        }
+
+        if(file_exists($d)){
+            return "200";
+        }else{
+            throw new Storageexception("Ha ocurrido un error inesperado al intentar descargar el archivo",1,array('errorCode'=>'230'));
+            exit;
+        }
     }
 
 }
