@@ -8,12 +8,4 @@ class Emailexception extends \Exception
     {
         parent::__construct($message, $code);
     }
-
-    public function __toString() {
-        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
-    }
-
-    public function funciónPersonalizada() {
-        echo "Una función personalizada para este tipo de excepción\n";
-    }
 }

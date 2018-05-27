@@ -2,6 +2,7 @@
 namespace xfxstudios\general;
 
 use \Mailjet\Resources;
+use xfxstudios\Exception\Emailexception;
 
 class Myemail
 {
@@ -204,7 +205,7 @@ class Myemail
 
         try{
             if($v==0){
-                throw new Exception("Error Processing Request", 1);
+                throw new Emailesception("Error Processing Request", 1);
             }
         }catch(Emailexception $e){
             return $e->getMessage();
