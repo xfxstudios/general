@@ -24,6 +24,7 @@ namespace xfxstudios\general;
 */
 
 use Google\Cloud\Storage\StorageClient;
+use xfxstudios\Exception\Storageexception;
 
 class Cloudstorage
 {
@@ -33,6 +34,10 @@ class Cloudstorage
     private $ruta;
     private $project;
     private $json;
+    private $name;
+    private $path = FALSE;
+    private $file;
+    private $ext;
 
     public function __construct(){
         $this->ini = parse_ini_file(SYSDIR.'/services/d.ini');
@@ -45,26 +50,57 @@ class Cloudstorage
         $this->bucket = $this->storage->bucket($this->ini['bucket']);
 
         $this->ci =& get_instance();
-
-        $this->ruta = APPPATH."/".$this->ini['upload']."/";
+        
+        $this->ruta = ($this->path) ? APPPATH."/".$this->path."/" : APPPATH."/".$this->ini['upload']."/";
     }
-    //carga archivos al bucket seleccionado
-    //Recibe un array como parametro
-    //Ejemplo: $this->my_storage->cargar(array('type'=>'public','name'=>'nombredearchivo'));//Para archivos con enlace publico
-    //Ejemplo: $this->my_storage->cargar(array('name'=>'nombredearchivo'));//Para rchivos sin enlace publico
-    public function _Cargar($X=null){
 
+    public function nameFile($X=null){
         if($X==null){
-            return false;
+            throw new Storageexception("No se ha enviado el Nombre del Archivo",1,array('errorCode'=>'214'));
             exit;
-        }else if(!is_array($X)){
-            return false;
+        }
+        $this->name = $X;
+        return $this;
+    }
+
+    public function file($X=null){
+        if($X==null){
+            throw new Storageexception("No se ha enviado la data del archivo cargado",1,array('errorCode'=>'212'));
+            exit;
+        }
+        if(!is_array($X)){
+            throw new Storageexception("La data del Archivo cargado no es un arreglo válido",1,array('errorCode'=>'210'));
+            exit;
+        }
+        if(!file_exists($this->ruta.$this->name)){
+            throw new Storageexception("El archivo que intenta descargar, no se encuentra en el Directorio Temporal",1,array('errorCode'=>'208'));
+            exit;
+        }
+        $this->file = json_encode($X);
+        $this->ext = strtolower($X['data']['file_ext']);
+        return $this;
+    }
+
+    public function path($X=null){
+        if($X==null){
+            throw new Storageexception("No se ha indicado una Ruta válida",1,array('errorCode'=>'206'));
+            exit;
+        }
+        $this->path = $X;
+        return $this;
+    }
+
+    //carga archivos al bucket seleccionado
+    public function _Cargar(){
+
+        if(empty($this_>ext)){
+            throw new Storageexception("No se ha detectado la Extensión del Archivo",1,array('errorCode'=>'204'));
             exit;
         }
 
         $folder = "";
 
-        switch(strtolower($X['data']['file_ext'])){
+        switch($this->ext){
 
             case '.jpg':
             case '.jpeg':
@@ -92,18 +128,22 @@ class Cloudstorage
 
         }
 
-
         $options = [
-            'resumable' => true,
-            'name' => $folder.$X['name'],
+            'resumable'     => true,
+            'name'          => $folder.$this->name,
             'predefinedAcl' => 'publicRead'
         ];
 
             $object = $this->bucket->upload(
-                fopen($this->ruta.$X['name'], 'r'),$options
+                fopen($this->ruta.$this->name, 'r'),$options
             );
 
-            unlink($this->ruta.$X['name']);
+            unlink($this->ruta.$this->name);
+            if(file_exists($this->ruta.$this->name)){
+                throw new Storageexception("Error al intentar eliminar el archivo del directorio",1,array('errorCode'=>'202'));
+                exit;
+            }
+            return "200";
     }
 
     //Elimina un objeto u archivo
