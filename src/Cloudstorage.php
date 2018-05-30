@@ -101,12 +101,12 @@ class Cloudstorage
             throw new Storageexception("No se ha enviado la Extensión del Archivo",1,array('errorCode'=>'222'));
             exit;
         }
-        if(!in_array($X)){
+        if(!in_array($X,$e)){
             throw new Storageexception("La Extensión enviada no es Válida",1,array('errorCode'=>'224'));
             exit;
         }
         $va = explode(".", $this->name);
-        if(!in_array($va[1])){
+        if(!in_array($va[1],$e)){
             throw new Storageexception("La Extensión enviada no coincide con el nombre enviado",1,array('errorCode'=>'226'));
             exit;
         }

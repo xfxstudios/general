@@ -5,6 +5,11 @@ class Firemanager
 {
     public $ur;
     private $error;
+    private $email;
+    private $movil;
+    private $password;
+    private $name;
+    private $uid;
 
     public function __construct(){
         $this->ini = parse_ini_file(SYSDIR.'/services/d.ini');
@@ -42,6 +47,33 @@ class Firemanager
             }
         }
     }
+
+    public function _email($X=null){
+        $this->email = $X;
+        return $this;
+    }
+
+    public function _movil($X=null){
+        $this->movil = $X;
+        return $this;
+    }
+
+    public function _password($X=null){
+        $this->password = $X;
+        return $this;
+    }
+
+    public function _name($X=null){
+        $this->name = $X;
+        return $this;
+    }
+
+    public function _uid($X=null){
+        $this->uid = $X;
+        return $this;
+    }
+
+
 
     //Crea un nuevo Usuario
     /*
