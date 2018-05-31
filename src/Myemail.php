@@ -8,9 +8,9 @@ class Myemail
 {
     private $apiKey;
     private $apiSecret;
-    private $for;
+    private $forMail;
     private $forName;
-    private $from;
+    private $fromMail;
     private $fromName;
     private $subject;
     private $template = FALSE;
@@ -61,14 +61,14 @@ class Myemail
             throw new Emailexception("Falta el Asunto del Email", 1);
             exit;
         }
-        $this->from     = $X[0];
+        $this->fromMail     = $X[0];
         $this->fromName = $X[1];
         $this->subject  = $X[2];
         return $this;
     }
 
     public function for($X=null){
-        if(empty($this->from) || empty($this->fromName) || empty($this->subject)){
+        if(empty($this->fromMail) || empty($this->fromName) || empty($this->subject)){
             throw new Emailexception("Faltan o están incompletos los Parámetros de Envío", 1);
             exit;
         }
@@ -100,7 +100,7 @@ class Myemail
             throw new Emailexception("Falta la información en texto plano", 1);
             exit;
         }
-        $this->for       = $X[0];
+        $this->forMail   = $X[0];
         $this->forName   = $X[1];
         $this->info      = $X[2];
         $this->plainText = $X[3];
@@ -170,7 +170,7 @@ class Myemail
             throw new Emailexception("Los datos de la Plantilla no son un arreglo válido", 1);
             exit;
         }
-        if(count($X)<3){
+        if(count($X)<2){
             throw new Emailexception("Faltán parámetros de la Plantilla", 1);
             exit;
         }
@@ -274,12 +274,12 @@ class Myemail
     private function armed(){
         $data = [];
         $data['From'] = [
-            'Email'=>$this->from,
+            'Email'=>$this->fromMail,
             'Name'=>$this->fromName
         ];
         $data['To'] = [
             [
-                'Email'=>$this->for,
+                'Email'=>$this->forMail,
                 'Name'=>$this->forName
             ]
         ];
@@ -303,11 +303,11 @@ class Myemail
     }
 
     public function send(){
-        if(empty($this->from) || empty($this->fromName) || empty($this->subject)){
+        if(empty($this->fromMail) || empty($this->fromName) || empty($this->subject)){
             throw new Emailexception("Faltan o están incompletos los Parámetros de Envío", 1);
             exit;
         }
-        if(empty($this->for) || empty($this->forName) || empty($this->info) || empty($this->plaiText)){
+        if(empty($this->forMail) || empty($this->forName) || empty($this->info) || empty($this->plainText)){
             throw new Emailexception("Faltan o están incompletos los Parámetros del Receptor del Envío", 1);
             exit;
         }
