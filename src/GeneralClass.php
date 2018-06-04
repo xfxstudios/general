@@ -344,11 +344,15 @@ class GeneralClass
 
 	//Retorna la fecha en formato corto
 	//Agregadas nuevas formas de fecha
-	public function date($time=null){
+	public function date($time=null,$ip=null){
 		setlocale(LC_TIME,$this->idioma());
 		
 		if($time == null){
-			$timezone = $this->city($this->IPreal())->timezone;
+			if($ip==null){
+				$timezone = $this->city($this->IPreal())->timezone;
+			}else{
+				$timezone = $this->city($ip)->timezone;
+			}
 		}else{
 			$timezone = $time;
 		}
