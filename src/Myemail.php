@@ -67,7 +67,7 @@ class Myemail
         return $this;
     }
 
-    public function for($X=null){
+    public function to($X=null){
         if(empty($this->fromMail) || empty($this->fromName) || empty($this->subject)){
             throw new Emailexception("Faltan o están incompletos los Parámetros de Envío", 1);
             exit;
