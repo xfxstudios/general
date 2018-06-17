@@ -1160,7 +1160,7 @@ class GeneralClass
 
 
 	public function paisesb($type=null){
-		$json = file_get_contents(__DIR__.'paises.json');
+		$json = file_get_contents(__DIR__.'/paises.json');
 		if($type==null){
 			return json_decode($json);
 		}else{
