@@ -9,10 +9,11 @@ namespace xfxstudios\general;
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  * 
  */
-
+use xfxstudios\general\GeneralClass;
 class Gautenticator
 {
     protected $_codeLength = 6;
+    private $fecha = "";
     /**
      * Create new secret.
      * 16 characters, randomly chosen from the allowed base32 characters.
@@ -21,6 +22,9 @@ class Gautenticator
      *
      * @return string
      */
+    public function __construct(){
+        $this->gener = new GeneralClass();
+    }
     public function createSecret($secretLength = 16)
     {
         $validChars = $this->_getBase32LookupTable();
@@ -60,7 +64,9 @@ class Gautenticator
     public function getCode($secret, $timeSlice = null)
     {
         if ($timeSlice === null) {
-            $timeSlice = floor(time() / 30);
+            //$timeSlice = floor($this->gener->date('','')->unix / 30);
+            $timeSlice = floor($this->googleDate() / 30);
+            //$timeSlice = floor(time() / 30);
         }
         $secretkey = $this->_base32Decode($secret);
         // Pack time into binary string
@@ -112,8 +118,11 @@ class Gautenticator
      */
     public function verifyCode($secret, $code, $discrepancy = 1, $currentTimeSlice = null)
     {
+
         if ($currentTimeSlice === null) {
-            $currentTimeSlice = floor(time() / 30);
+            //$currentTimeSlice = floor(time() / 30);
+            //$currentTimeSlice = floor($this->gener->date('','')->unix / 30);
+            $currentTimeSlice = floor($this->googleDate() / 30);
         }
         if (strlen($code) != 6) {
             return false;
@@ -221,5 +230,31 @@ class Gautenticator
         }
         // They are only identical strings if $result is exactly 0...
         return $result === 0;
+    }
+
+    private function header_callback($curl, $header)
+    {
+        if (preg_match('/^Date:/', $header)) {
+            $this->fecha = trim(substr($header, 5));
+            $this->fecha = date('Y-m-d H:i:s', strtotime($this->fecha));
+        }
+
+        return strlen($header);
+    }
+
+    private function googleDate(){
+        $curl = curl_init("http://www.google.com/");
+
+        curl_setopt($curl, CURLOPT_NOBODY, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HEADERFUNCTION, array(&$this,'header_callback'));
+
+        curl_exec($curl);
+
+        curl_close($curl);
+
+        if ($this->fecha != "") {
+            return strtotime($this->fecha);
+        }
     }
 }
