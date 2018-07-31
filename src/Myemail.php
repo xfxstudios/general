@@ -27,6 +27,9 @@ class Myemail
     private $cType;
     private $fileName;
     private $codeFile;
+    private $errno = FALSE;
+    private $setvariables = FALSE;
+    private $varcontent;
 
     public function __construct(){
         $this->ci =& get_instance();
@@ -106,6 +109,14 @@ class Myemail
         $this->plainText = $X[3];
         return $this;
     }
+
+    public function variables($x=null){
+        if($x[0]){
+            $this->setvariables = true;
+            $this->varcontent = json_encode($x[1]);
+            return $this;
+        }
+    }//
 
     public function copy($X=null){
         if($X==null){
@@ -313,13 +324,17 @@ class Myemail
         }
         $data = null;
         if($this->template){
-            $file = file_get_contents(APPPATH.'/plantillas/'.$this->templateName);
-            if($file===FALSE){
-                throw new Emailexception("No se ha podido recuperar el archivo ".$this->templateName, 1);
-                exit;
+            if(file_exists(APPPATH.'/plantillas/'.$this->templateName)){
+                $file = file_get_contents(APPPATH.'/plantillas/'.$this->templateName);
+                if($file===FALSE){
+                    throw new Emailexception("No se ha podido recuperar el archivo ".$this->templateName, 1);
+                    exit;
+                }
+                $file = str_replace("%info%",$this->info,$file);
+                $data = $file;
+            }else{
+                $this->errno = TRUE;
             }
-            $file = str_replace("%info%",$this->info,$file);
-            $data = $file;
         }else{
             $data = $this->info;
         }
@@ -339,14 +354,27 @@ class Myemail
             ];
         }
 
+        if($this->setvariables){
+            $vars = json_decode($this->varcontent);
+            $datos['TemplateLanguage']  = true;
+            $datos['Variables'] = [];
+            foreach($vars as $key => $value){
+                $datos['Variables'][$key]   =  $value;
+            }
+        }
+
         $body = [
             'Messages' => [
                 $datos
             ]
         ];
         
-        $response = $this->mj->post(Resources::$Email, ['body' => $body]);
-        return $response->getData();
+        if(!$this->errno){
+            $response = $this->mj->post(Resources::$Email, ['body' => $body]);
+            return $response->getData();
+        }else{
+            return false;
+        }
     }//
 
 }

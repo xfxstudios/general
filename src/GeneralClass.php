@@ -13,20 +13,9 @@ class GeneralClass
     {
 		// Instancia de Codeigniter para cargar la libreria mgeneral
 		$this->ci =& get_instance();
-		$this->ci->load->model('mgeneral');
 		$this->genmodel = new GeneralModel();
 	}
 	
-	//Funcion para escribir en historial de aplicaciones
-	//Recibe 2 parametros, todo lo demás se configura en el mgeneral de cada app
-	public function historial($X){
-		$data = array(
-			"asunto"     => $X[0],
-			"info"       => $X[1]
-		);
-		$this->ci->mgeneral->setHistorial($data);
-	}
-
     //detecta el idioma del usuario
 	public function idioma(){
 	
@@ -356,6 +345,10 @@ class GeneralClass
 		}else{
 			$timezone = $time;
 		}
+		if($timezone == 'America/Caracas'){
+		}else{
+			$timezone = 'America/Caracas';
+		}
 		date_default_timezone_set($timezone);
 		$ret = (object) array(
 			'datetime'  => date("Y-m-d H:i:s"),
@@ -367,7 +360,8 @@ class GeneralClass
 			'iso'       => date("c"),
 			'seconds'   => date("U"),
 			'format'    => date("r"),
-			'unix'      => time()
+			'unix'      => time(),
+			'timezone'	=>	$timezone
 		);
 		return $ret;
 	}//END
@@ -474,20 +468,28 @@ class GeneralClass
 
 	//Retorna la IP
 	public function IPreal() {
-	    if (!empty($_SERVER['HTTP_CLIENT_IP']))
-	        return $_SERVER['HTTP_CLIENT_IP'];
+		$ip =  "";
+		
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])){
+	        $ip = $_SERVER['HTTP_CLIENT_IP'];
+		}else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}else{
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
 
-	    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-	        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+		$e = ($ip !="") ? explode(".",$ip) : ['0'];
 
-		return $_SERVER['REMOTE_ADDR'];		
-	}//fin funcion IPreal
+		$valid = ['0','10','172','192','169','127'];
+
+		return (!in_array($e[0],$valid)) ? $ip : '186.185.186.227';
+	}
 
 
 	//Calcula la Diferencia en Dias entre fechas
 	public function diferencia($X){
-		$datetime1 = new DateTime($X[0]);
-		$datetime2 = new DateTime($X[1]);
+		$datetime1 = new \DateTime($X[0]);
+		$datetime2 = new \DateTime($X[1]);
 		$sale = $datetime1->diff($datetime2);
 
 		return $sale->format('%a');
@@ -497,10 +499,11 @@ class GeneralClass
 
 	//Calcula la Edad
 	public function edad($X){
-		$actual = date("Y-m-d H:i:s");
-		$nace = $X;
+		$actual = $this->date()->datetime;
+		$X      = str_replace("/","-",$X);
+		$nace   = date("Y-m-d", strtotime($X));
 
-		$a = $this->diferencia(array($actual, $nace));
+		$a = $this->diferencia([$actual, $nace]);
 
 		return round(($a / 365),0);
 	}//END
@@ -623,7 +626,7 @@ class GeneralClass
 	//Retorna la imagen gravatar si el usuario la posee
 	public function gravatar($mail=null){
 		$gravatar_link = 'http://www.gravatar.com/avatar/' . md5($mail) . '?s=32';
-		echo '<img src="' . $gravatar_link . '" />';
+		echo $gravatar_link;
 	}
 
 	//Genera un Archivo CSV a partir de un array
@@ -682,7 +685,7 @@ class GeneralClass
 	 * Retorna un array de fechas de acuerdo al rango solicitado, excluyendo fines de semana
 	*/
 	public function diasFin($X){
-		$timezone = $this->city($this->IPreal())->timezone;
+		$timezone = $this->date()->timezone;
 		date_default_timezone_set($timezone);
 
 		$fecha1 = strtotime($X[0]); 
@@ -691,7 +694,11 @@ class GeneralClass
 		for($fecha1;$fecha1<=$fecha2;$fecha1=strtotime('+1 day ' . date('Y-m-d',$fecha1))){ 
 
 			if((strcmp(date('w',$fecha1),'0'))!==0 && (strcmp(date('w',$fecha1),'6'))!==0){
-				array_push($ret, date('Y-m-d l',$fecha1)); 
+				if($X[2]){
+					array_push($ret, date('Y-m-d l',$fecha1)); 
+				}else{
+					array_push($ret, date('Y-m-d',$fecha1)); 
+				}
 			}
 
 		}
@@ -708,8 +715,8 @@ class GeneralClass
 		$timezone = $this->city($this->IPreal())->timezone;
 		date_default_timezone_set($timezone);
 
-		$inicio = new DateTime($X[0]);//Inicio
-		$final = new DateTime($X[1]);//Fin
+		$inicio = new \DateTime($X[0]);//Inicio
+		$final = new \DateTime($X[1]);//Fin
 
 		// Meter fecha final en la operación.
 		$final->modify('+1 day');
@@ -720,7 +727,7 @@ class GeneralClass
 		$dias = $intervalo->days;
 		
 		// Creamos un perido para que imprima los días (P1D es igual a 1 dia)
-		$periodo = new DatePeriod($inicio, new DateInterval('P1D'), $final);
+		$periodo = new \DatePeriod($inicio, new \DateInterval('P1D'), $final);
 		
 		//Array con días de fiesta
 		$holidays = $X[2];//Array con días de fiesta
@@ -782,7 +789,7 @@ class GeneralClass
 			"VEINTI", 30 => "TREINTA", 40 => "CUARENTA", 50 => "CINCUENTA", 60 => "SESENTA", 70 => "SETENTA", 80 => "OCHENTA", 90 => "NOVENTA",
 			100 => "CIENTO", 200 => "DOSCIENTOS", 300 => "TRESCIENTOS", 400 => "CUATROCIENTOS", 500 => "QUINIENTOS", 600 => "SEISCIENTOS", 700 => "SETECIENTOS", 800 => "OCHOCIENTOS", 900 => "NOVECIENTOS"
 		);
-	//
+
 		$xcifra = trim($xcifra);
 		$xlength = strlen($xcifra);
 		$xpos_punto = strpos($xcifra, ".");
@@ -874,10 +881,10 @@ class GeneralClass
 			} // ENDDO
 
 			if (substr(trim($xcadena), -5, 5) == "ILLON") // si la cadena obtenida termina en MILLON o BILLON, entonces le agrega al final la conjuncion DE
-				$xcadena.= " DE";
+				$xcadena.= " ";
 
 			if (substr(trim($xcadena), -7, 7) == "ILLONES") // si la cadena obtenida en MILLONES o BILLONES, entoncea le agrega al final la conjuncion DE
-				$xcadena.= " DE";
+				$xcadena.= " ";
 
 			// ----------- esta línea la puedes cambiar de acuerdo a tus necesidades o a tu país -------
 			if (trim($xaux) != "") {
@@ -896,13 +903,13 @@ class GeneralClass
 						break;
 					case 2:
 						if ($xcifra < 1) {
-							$xcadena = "CERO $xdecimales/100 M.N.";
+							$xcadena = "con CERO $xdecimales/100";
 						}
 						if ($xcifra >= 1 && $xcifra < 2) {
-							$xcadena = "UN $xdecimales/100 M.N. ";
+							$xcadena = "con UN $xdecimales/100";
 						}
 						if ($xcifra >= 2) {
-							$xcadena.= " $xdecimales/100 M.N. "; //
+							$xcadena.= " con $xdecimales/100"; //
 						}
 						break;
 				} // endswitch ($xz)
@@ -912,8 +919,8 @@ class GeneralClass
 			$xcadena = str_replace("  ", " ", $xcadena); // quito espacios dobles
 			$xcadena = str_replace("UN UN", "UN", $xcadena); // quito la duplicidad
 			$xcadena = str_replace("  ", " ", $xcadena); // quito espacios dobles
-			$xcadena = str_replace("BILLON DE MILLONES", "BILLON DE", $xcadena); // corrigo la leyenda
-			$xcadena = str_replace("BILLONES DE MILLONES", "BILLONES DE", $xcadena); // corrigo la leyenda
+			$xcadena = str_replace("BILLON DE MILLONES", "BILLON ", $xcadena); // corrigo la leyenda
+			$xcadena = str_replace("BILLONES DE MILLONES", "BILLONES ", $xcadena); // corrigo la leyenda
 			$xcadena = str_replace("DE UN", "UN", $xcadena); // corrigo la leyenda
 		} // ENDFOR ($xz)
 		return trim($xcadena);
