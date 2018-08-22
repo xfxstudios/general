@@ -118,6 +118,17 @@ class Myemail
         }
     }//
 
+            /*$nu = str_replace("%name%",ucwords($r->nombre),$nu);
+            $nu = str_replace("%url%","<a href='".base_url()."restorepass?token={{var:token:\"\"}}&user={{var:user:\"\"}}'>Restaurar Clave</a>",$nu);
+
+            $email = $this->_email
+                ->from(['support@trueley.com','Equipo TrueLey','Recuperar Clave de TrueLey.com'])
+                ->to([$r->usuario,$r->nombre,$nu,$nu])
+                ->template([TRUE,'restorepass.htm'])
+                ->variables([TRUE,['token'=>$token,'user'=>$r->usuario]])
+                ->send();*/
+    
+
     public function copy($X=null){
         if($X==null){
             throw new Emailexception("Faltán parámetros de la Copia", 1);
