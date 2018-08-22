@@ -3,11 +3,11 @@ use xfxstudios\general;
 
 class Pdfclass {
 
-    var $html;
-    var $path;
-    var $filename;
-    var $paper_size;
-    var $orientation;
+    private $html;
+    private $path;
+    private $filename;
+    private $paper_size;
+    private $orientation;
     
     /**
      * Constructor
@@ -62,7 +62,8 @@ class Pdfclass {
 	 */	
 	function html($html = NULL)
 	{
-        $this->html = $html;
+		$this->html = $html;
+		return $this;
 	}
 	
 	// --------------------------------------------------------------------
@@ -75,7 +76,8 @@ class Pdfclass {
 	 */	
 	function folder($path)
 	{
-        $this->path = $path;
+		$this->path = $path;
+		return $this;
 	}
 	
 	// --------------------------------------------------------------------
@@ -88,7 +90,8 @@ class Pdfclass {
 	 */	
 	function filename($filename)
 	{
-        $this->filename = $filename;
+		$this->filename = $filename;
+		return $this;
 	}
 	
 	// --------------------------------------------------------------------
@@ -103,7 +106,8 @@ class Pdfclass {
 	function paper($paper_size = NULL, $orientation = NULL)
 	{
         $this->paper_size = $paper_size;
-        $this->orientation = $orientation;
+		$this->orientation = $orientation;
+		return $this;
 	}
 	
 	// --------------------------------------------------------------------
