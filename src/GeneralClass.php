@@ -3,6 +3,8 @@ namespace xfxstudios\general;
 
 use GeoIp2\Database\Reader;
 use xfxstudios\general\GeneralModel;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 class GeneralClass
 {
@@ -1175,6 +1177,41 @@ class GeneralClass
 		}
 	}
 
+	/**
+     * Retorta un codigo basado en la fecha y hora de la solicitud
+     * $this->my_uuid->timeBased();
+     * i.e. e4eaaaf2-d142-11e1-b3e4-080027620cdd
+     */
+    public function getuuid($x=null){
+        try{
+			$name = ($x[1]==null) ? 'https://hitcel.com' : $x[1];
 
+			switch($x[0]){
+				case null:
+				case 'v1':
+					$uuid1 = Uuid::uuid1();
+					return $uuid1->toString();// i.e. e4eaaaf2-d142-11e1-b3e4-080027620cdd
+				break;
+
+				case 'v3':
+					$uuid3 = Uuid::uuid3(Uuid::NAMESPACE_DNS, $name);
+					return $uuid3->toString() . "\n"; // i.e. 11a38b9a-b3da-360f-9353-a5a725514269
+				break;
+
+				case 'v4':
+					$uuid4 = Uuid::uuid4();
+					return $uuid4->toString() . "\n"; // i.e. 25769c6c-d34d-4bfe-ba98-e0ee856f3e7a
+				break;
+
+				case 'v5':
+					$uuid5 = Uuid::uuid5(Uuid::NAMESPACE_DNS, $name);
+					return $uuid5->toString() . "\n"; // i.e. c4a760a8-dbcf-5254-a0d9-6a4474bd1b62
+				break;
+			}
+
+        }catch(UnsatisfiedDependencyException $e){
+            return 'Caught exception: ' . $e->getMessage();
+        };
+    }//
 
 }
