@@ -20,7 +20,7 @@
         "php" : ">=5.4",
         "ramsey/uuid":"3.*",
         "geoip/geoip":"~1.16",
-        "google/cloud-storage":"^1.7",
+        "google/cloud-storage":"^1.5",
         "mailjet/mailjet-apiv3-php":"^1.0.9"
     },
     "require-dev": {
