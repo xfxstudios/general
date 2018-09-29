@@ -19,20 +19,26 @@ class GeneralClass
 	}
 	
     //detecta el idioma del usuario
-	public function idioma(){
+	public function idioma($l=null){
+
+		if($l!==null){
+			if(in_array($l,['es','en'])){
+				$_SESSION['lang'] = ($l=='es') ? 'spanish' : 'english';
+				$idi = ($l=='es') ? 'es' : 'en';
+			}
+		}
 	
 		if(isset($_SESSION['lang'])){
-			$idi = $_SESSION['lang'];
+			return  $_SESSION['lang'];
 		}
 		if(!isset($_SESSION['lang']) && isset($_COOKIE['lang'])){
-			$idi = $_COOKIE['lang'];
+			return $_COOKIE['lang'];
 		}else if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){
 			$idi = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+			return ($idi=='es') ? 'spanish' : 'english';
 		}else{
-			$idi = "en";
+			return "english";
 		}
-
-		return ($idi=='es') ? 'es' : 'en';
 	}//
 
 	//Crear variable a partir de cadena de texto simple
@@ -336,7 +342,8 @@ class GeneralClass
 	//Retorna la fecha en formato corto
 	//Agregadas nuevas formas de fecha
 	public function date($time=null,$ip=null){
-		setlocale(LC_TIME,$this->idioma());
+		$idioma = ($this->idioma()=='spanish') ? 'es' : 'en';
+		setlocale(LC_TIME,$idioma);
 		
 		if($time == null){
 			if($ip==null){
@@ -457,13 +464,13 @@ class GeneralClass
 
 	//Formatea la fecha con hora
 	public function fechalan($X){
-		$lan = $this->idioma();
+		$lan = ($this->idioma()=='spanish') ? 'es' : 'en';
 		return $fecha = ($lan == "es") ? date("d-m-Y H:i:s", strtotime($X)) : date("Y-m-d H:i:s", strtotime($X));
 	}//END
 
 	//Formatea la fecha sin hora de acuerdo al idioma
 	public function fechalanST($X){
-		$lan = $this->idioma();
+		$lan = ($this->idioma()=='spanish') ? 'es' : 'en';
 		return $fecha = ($lan == "es") ? date("d-m-Y", strtotime($X)) : date("Y-m-d", strtotime($X));
 	}//END
 
@@ -514,7 +521,8 @@ class GeneralClass
 
 	//Formatea un Numero de acuerdo al idioma
 	public function numFormat($X){
-		switch ($this->idioma()) {
+		$lan = ($this->idioma()=='spanish') ? 'es' : 'en';
+		switch ($lan) {
 			case 'es':
 				$X = number_format($X,2,',','.');
 			break;
