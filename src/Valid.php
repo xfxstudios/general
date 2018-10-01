@@ -159,6 +159,19 @@ class Valid
                     return $err;
                 }
 
+                $ta = new \DateTime($this->gen->date()->unix);
+                $tb = new \DateTime($decode->exp);
+                $rt = $tb->diff($ta);
+                $horas = 60 * intval($this->ini['hours']);
+
+                if( $rt->i > $horas){
+                    $err = (object) array(
+                        'error'   => true,
+                        'message' => "Session Expired"
+                    );
+                    return $err;
+                }
+
                 return $decode;
 
             }catch(\Exception $e){
