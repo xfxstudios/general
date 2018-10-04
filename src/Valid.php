@@ -159,8 +159,8 @@ class Valid
                     return $err;
                 }
 
-                $ta = new \DateTime($this->gen->date()->unix);
-                $tb = new \DateTime($decode->exp);
+                $ta = new \DateTime($this->gen->date()->datetime);
+                $tb = new \DateTime(strtotime($decode->exp));
                 $rt = $tb->diff($ta);
                 $horas = 60 * intval($this->ini['hours']);
 
