@@ -1220,6 +1220,22 @@ class GeneralClass
         }catch(UnsatisfiedDependencyException $e){
             return 'Caught exception: ' . $e->getMessage();
         };
-    }//
+	}//
+	
+
+	public function saludo($x){
+		$sad = ["Buen día ","Buena Tarde ",'Buena Noche '];
+		switch($x){
+			case ($x>=0 && $x<=11):
+				return $sad[0];
+			break;
+			case ($x>=12 && $x<=18):
+				return $sad[1];
+			break;
+			case ($x>=19 && $x<=23):
+				return $sad[2];
+			break;
+		}
+	}
 
 }
