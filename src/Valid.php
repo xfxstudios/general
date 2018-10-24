@@ -159,7 +159,7 @@ class Valid
                     return $err;
                 }
                 //Validacion de Fecha Hora
-                $ta = new \DateTime($this->gen->date()->datetime);
+                /*$ta = new \DateTime($this->gen->date()->datetime);
                 $tb = new \DateTime(strtotime($decode->exp));
                 $rt = $tb->diff($ta);
                 $horas = 60 * intval($this->ini['hours']);
@@ -170,7 +170,7 @@ class Valid
                         'message' => "Session Expired"
                     );
                     return $err;
-                }
+                }*/
 
                 return $decode;
 
