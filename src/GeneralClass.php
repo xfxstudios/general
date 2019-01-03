@@ -194,6 +194,28 @@ class GeneralClass
 		return $claveB;
 	}//END
 
+	//Retorna un intervalo de horas en formato array
+	//intervaloHora( '08:00:00', '17:00:00',30);
+	function intervaloHora($hora_inicio, $hora_fin, $intervalo = 30) {
+		$hora_inicio = new DateTime( $hora_inicio );
+		$hora_fin    = new DateTime( $hora_fin );
+		$hora_fin->modify('+1 second'); // Añadimos 1 segundo para que nos muestre $hora_fin
+		// Si la hora de inicio es superior a la hora fin
+		// añadimos un día más a la hora fin
+		if ($hora_inicio > $hora_fin) {
+			$hora_fin->modify('+1 day');
+		}
+		// Establecemos el intervalo en minutos        
+		$intervalo = new DateInterval('PT'.$intervalo.'M');
+		// Sacamos los periodos entre las horas
+		$periodo   = new DatePeriod($hora_inicio, $intervalo, $hora_fin);        
+		foreach( $periodo as $hora ) {
+			// Guardamos las horas intervalos 
+			$horas[] =  $hora->format('H:i:s');
+		}
+		return $horas;
+	}//
+
 
 
 	//Limpia una cadena de simbolos injnecesarios
