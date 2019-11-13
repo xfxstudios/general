@@ -52,138 +52,6 @@ class GeneralClass
 		$r = trim(str_replace($rempl, ' ', $valor));
 		return str_replace("\r", "", str_replace("\n", "", str_replace("\t", "", $r)));
 	}//
-	public function _verificador($X) {
-	
-		$n = explode("|",$X);
-		if(strlen($n[1])==7){
-			$c = "0".$n[1];//Cédulas de 7 Digitos
-		}else if(strlen($n[1])==6){
-			$c = "00".$n[1];//Cédulas de 6 digitos
-		}else{
-			$c = $n[1];//Cedula normal
-		}
-	
-			$digitos = str_split($n[0].$c);
-			$digitos[8] *= 2;
-			$digitos[7] *= 3;
-			$digitos[6] *= 4;
-			$digitos[5] *= 5;
-			$digitos[4] *= 6;
-			$digitos[3] *= 7;
-			$digitos[2] *= 2;
-			$digitos[1] *= 3;
-	
-			switch ($digitos[0]) {
-				case 'V':
-					$digitoEspecial = 1;
-					break;
-				case 'E':
-					$digitoEspecial = 2;
-					break;
-				case 'C':
-				case 'J':
-					$digitoEspecial = 3;
-					break;
-				case 'P':
-					$digitoEspecial = 4;
-					break;
-				case 'G':
-					$digitoEspecial = 5;
-					break;
-			}
-			$suma = (array_sum($digitos)) + ($digitoEspecial*4);
-			$residuo = $suma % 11;
-			$resta = 11 - $residuo;
-			$digitoVerificador = ($resta >= 10) ? 0 : $resta;
-			
-		return $digitoVerificador;
-	}//
-	public function _getUrl($url) {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HEADER, FALSE);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-        if (curl_exec($curl) === false) {
-            return false;
-        } else {
-            $return = curl_exec($curl);
-        }
-        curl_close($curl);
-
-        return $return;
-	}
-	public function getCNE($X){
-		//Obtenemos el HTML del CNE
-			try{
-				$context = stream_context_create(array(
-					'http' => array(
-						'timeout' => 10   // Timeout in seconds
-					)
-				));
-				//$html = $this->_getUrl('http://www.cne.gov.ve/web/registro_electoral/ce.php?nacionalidad='.$X[0].'&cedula='.$X[1]);
-				$html = file_get_contents('http://www.cne.gov.ve/web/registro_electoral/ce.php?nacionalidad='.$X[0].'&cedula='.$X[1] , 0 , $context);
-				if(!$html){
-					throw new Exception("Error ".error_get_last());	
-				}
-			}catch(Exception $e){
-				return $e;
-			}
-		//Eliminamos las etiquetas HTML
-			$html = strip_tags($html);
-		//Datos a buscar en el texto generado
-			$rempl = array('Cédula:', 'Nombre:', 'Estado:', 'Municipio:', 'Parroquia:', 'Centro:', 'Dirección:', 'SERVICIO ELECTORAL', 'Mesa:');
-		//Reemplazamos dichos datos por caracter de control
-			$r = trim(str_replace($rempl, '|', $this->limpiarCampo($html)));
-		//Gebneramos el array desde el caracter de control
-			$recurso = explode("|", $r);
-		//Verificamos que el resultado sea válido
-			if(strlen($recurso[1])>20){
-				//Si no es v´´alido la cédula no existe
-				$datos = (object) array(
-					"cod"	=>	"201",
-					"msg"	=>	"La cédula no se encuentra Registrada o Se envión un dato errado, por favor, verifique"
-				);
-			}else{
-				//Si es válido preparamos el objeto de salida
-			$n = explode("-",$recurso[1]);//separamos la cédula
-			$nn = explode(" ",$recurso[2]);//Separamos el nombre
-			$est = explode(" ",$recurso[3]);
-			unset($est[0]);
-			$estFinal = (count($est)>1) ? implode(" ",$est) : implode("",$est);
-			
-			$cid = explode(" ",$recurso[4]);
-			unset($cid[0]);
-			$cidFinal = (count($cid)>1) ? implode(" ",$cid) : implode("",$cid);
-			
-			$parr = explode(" ",$recurso[5]);
-			unset($parr[0]);
-			$parrFinal = (count($parr)>1) ? implode(" ",$parr) : implode("",$parr);
-
-
-			//$titulos = array('Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido');
-		
-				$datos = (object) array(
-					"cod"            => "200",
-					"nacionalidad"   => $n[0],
-					"cedula"         => $n[1],
-					"RIF"            => (strlen($n[1]) == 7 ) ? $n[0].'-0'.$n[1].'-'.$this->_verificador($n[0].'|'.$n[1]) : $n[0].'-'.$n[1].'-'.$this->_verificador($n[0].'|'.$n[1]),
-					"cedCompleta"    => $recurso[1],
-					"nombreCompleto" => $recurso[2],
-					"estado"         => $estFinal,
-					"municipio"      => $cidFinal,
-					"parroquia"      => $parrFinal,
-					"escuela"        => $recurso[6],
-				);
-				//Verificamos la cantidad de nombres y apellidos y los recorremos
-				/*for($i=0; $i<count($nn);$i++){
-					$datos[$titulos[$i]] = $nn[$i];
-				}*/
-			}
-		//Retornamos la respuesta
-			return $datos;
-	}//
 
 	//Genera una clave de usuario
 	function claveusuario($X){
@@ -277,7 +145,8 @@ class GeneralClass
 	//Retorna Informacion completa de una IP
 	public function city($X=null){
 		$ip = ($X==null) ? $this->IPreal() : $X;
-		$reader = new Reader($_SERVER['DOCUMENT_ROOT'].'/application/libraries/GeoLite2-City.mmdb');
+		//$reader = new Reader($_SERVER['DOCUMENT_ROOT'].'/application/libraries/GeoLite2-City.mmdb');
+		$reader = new Reader('./GeoLite2-City.mmdb');
 		
 		try{
 			$data = $reader->city($ip);
@@ -302,7 +171,7 @@ class GeneralClass
 	//Retorna Informacion del Pais
     public function country($X=null){
 		$ip = ($X==null) ? $this->IPreal() : $X;
-		$reader = new Reader($_SERVER['DOCUMENT_ROOT'].'/application/libraries/GeoLite2-Country.mmdb');
+		$reader = new Reader('./GeoLite2-Country.mmdb');
 		
 		try{
 			$data = $reader->country($ip);

@@ -34,11 +34,11 @@ class Valid
         private $_aud = null;
 
         public function __construct(){
-            $this->ci =& get_instance();
-            $this->ini = parse_ini_file(SYSDIR.'/services/d.ini');
+            $this->ci          = & get_instance();
+            $this->ini         = parse_ini_file(SYSDIR.'/services/d.ini');
             $this->_secret_key = $this->ini['secret_key'];
-            $this->_encrypt = [$this->ini['encrypt']];
-            $this->gen = new GeneralClass();
+            $this->_encrypt    = [$this->ini['encrypt']];
+            $this->gen         = new GeneralClass();
         }//
         
         public function _SignIn($data=null)
@@ -158,19 +158,6 @@ class Valid
                     );
                     return $err;
                 }
-                //Validacion de Fecha Hora
-                /*$ta = new \DateTime($this->gen->date()->datetime);
-                $tb = new \DateTime(strtotime($decode->exp));
-                $rt = $tb->diff($ta);
-                $horas = 60 * intval($this->ini['hours']);
-
-                if( $rt->i > $horas){
-                    $err = (object) array(
-                        'error'   => true,
-                        'message' => "Session Expired"
-                    );
-                    return $err;
-                }*/
 
                 return $decode;
 
@@ -208,7 +195,7 @@ class Valid
                     $token,
                     $this->_secret_key,
                     $this->_encrypt
-        );
+                );
 
                 return $decode;
 
